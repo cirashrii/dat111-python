@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import image as mpimg
 from matplotlib.backends.backend_svg import svgProlog
+from mpl_toolkits.mplot3d.proj3d import transform
+from scipy.ndimage import rotate
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
@@ -13,6 +15,9 @@ from IPython.display import SVG, display
 
 from svgpath2mpl import parse_path
 from xml.dom import minidom
+import matplotlib.pyplot as plt
+import matplotlib.transforms as mtransforms
+
 
 
 display(SVG(filename='cloud.svg'))
@@ -75,17 +80,18 @@ def on_click(event) :
     doc = minidom.parse("cloud.svg")
     path_strings = [p.getAttribute('d') for p in doc.getElementsByTagName('path')]
     doc.unlink()
+
+#svg pointer
     svg_path = parse_path(path_strings[0])
+    svg_path = svg_path.transformed(mtransforms.Affine2D().scale(1, -1))
     svg_path.vertices -= svg_path.vertices.mean(axis=0)
-
-
 
     colorsPred = [color_from_nedbor(nedbor * 12) for nedbor in y_pred]
     axMap.scatter(x, y, c=color_from_nedbor(aarsnedbor), s=size_from_nedbor(aarsnedbor) * 3.5, marker=svg_path)
     axGraph.bar(months, y_pred, color=colorsPred)
 
-
     plt.show()
+
 
 def draw_label_and_ticks():
     xlabels = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
