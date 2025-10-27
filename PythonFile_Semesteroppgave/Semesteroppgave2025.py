@@ -77,26 +77,13 @@ def on_click(event) :
     doc.unlink()
     svg_path = parse_path(path_strings[0])
     svg_path.vertices -= svg_path.vertices.mean(axis=0)
-    fig, ax = plt.subplots()
+
 
 
     colorsPred = [color_from_nedbor(nedbor * 12) for nedbor in y_pred]
     axMap.scatter(x, y, c=color_from_nedbor(aarsnedbor), s=size_from_nedbor(aarsnedbor) * 3.5, marker=svg_path)
     axGraph.bar(months, y_pred, color=colorsPred)
 
-
-
-    doc = minidom.parse("cloud.svg")
-    path_strings = [p.getAttribute('d') for p in doc.getElementsByTagName('path')]
-    doc.unlink()
-    svg_path = parse_path(path_strings[0])
-    svg_path.vertices -= svg_path.vertices.mean(axis=0)
-    fig, ax = plt.subplots()
-    ax.plot([0],
-            marker=svg_path,
-            markersize=40,
-            linestyle='None',
-            color='blue')
 
     plt.show()
 
