@@ -3,12 +3,17 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import image as mpimg
+from matplotlib.backends.backend_svg import svgProlog
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn import preprocessing
 from sklearn.preprocessing import PolynomialFeatures
 from IPython.display import SVG, display
+
+from svgpath2mpl import parse_path
+from xml.dom import minidom
+
 
 display(SVG(filename='cloud.svg'))
 
@@ -17,6 +22,7 @@ def draw_the_map():
     # Accumulate all months to year
     axMap.cla()
     plt.imshow(img, extent=(0, 13, 0, 10))
+
     df_year = df.groupby(['X', 'Y']).agg({'Nedbor': 'sum'}).reset_index()
     xr = df_year['X'].tolist()
     yr = df_year['Y'].tolist()
@@ -66,12 +72,33 @@ def on_click(event) :
     axMap.text(x, y, s=label_from_nedbor(aarsnedbor), color='white', fontsize=10, ha='center', va='center')
     axGraph.set_title(f"Nedbør per måned, Årsnedbør {int(aarsnedbor)} mm")
 
+    doc = minidom.parse("cloud.svg")
+    path_strings = [p.getAttribute('d') for p in doc.getElementsByTagName('path')]
+    doc.unlink()
+    svg_path = parse_path(path_strings[0])
+    svg_path.vertices -= svg_path.vertices.mean(axis=0)
+    fig, ax = plt.subplots()
+
+
     colorsPred = [color_from_nedbor(nedbor * 12) for nedbor in y_pred]
-    axMap.scatter(x, y, c=color_from_nedbor(aarsnedbor), s=size_from_nedbor(aarsnedbor) * 3.5, marker="o")
-    axMap.scatter(x, y, c="red", s=size_from_nedbor(aarsnedbor)*2.5, marker="o")
+    axMap.scatter(x, y, c=color_from_nedbor(aarsnedbor), s=size_from_nedbor(aarsnedbor) * 3.5, marker=svg_path)
     axGraph.bar(months, y_pred, color=colorsPred)
-    draw_label_and_ticks()
-    plt.draw()
+
+
+
+    doc = minidom.parse("cloud.svg")
+    path_strings = [p.getAttribute('d') for p in doc.getElementsByTagName('path')]
+    doc.unlink()
+    svg_path = parse_path(path_strings[0])
+    svg_path.vertices -= svg_path.vertices.mean(axis=0)
+    fig, ax = plt.subplots()
+    ax.plot([0],
+            marker=svg_path,
+            markersize=40,
+            linestyle='None',
+            color='blue')
+
+    plt.show()
 
 def draw_label_and_ticks():
     xlabels = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
