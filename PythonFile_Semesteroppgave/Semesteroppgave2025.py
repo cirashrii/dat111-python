@@ -100,6 +100,8 @@ def on_click(event) :
     axMap.scatter(x, y, c=color_from_nedbor(aarsnedbor), s=size_from_nedbor(aarsnedbor) * 2, marker=svg_path)
     axGraph.bar(months, y_pred, color=colorsPred)
 
+    draw_label_and_ticks()
+
     plt.show()
 
 
