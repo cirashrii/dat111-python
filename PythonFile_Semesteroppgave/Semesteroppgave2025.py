@@ -42,7 +42,7 @@ def draw_the_map():
     yr = df_year['Y'].tolist()
     nedborAar = df_year['Nedbor']
     ColorList = [color_from_nedbor(n) for n in nedborAar]
-    axMap.scatter(xr, yr, c=ColorList, s=size_from_nedbor(nedborAar/12) * 1.25, marker=svg_path)
+    axMap.scatter(xr, yr, c=ColorList, s=size_from_nedbor(nedborAar/12) * 2, marker=svg_path)
     labels = [label_from_nedbor(n) for n in nedborAar]
     for i, y in enumerate(xr):
         axMap.text(xr[i], yr[i], s=labels[i], color='white', fontsize=8, ha='center', va='center')
