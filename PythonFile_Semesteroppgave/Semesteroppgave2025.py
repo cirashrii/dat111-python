@@ -12,7 +12,6 @@ from IPython.display import SVG, display
 
 display(SVG(filename='cloud.svg'))
 
-
 def draw_the_map():
     # Accumulate all months to year
     axMap.cla()
@@ -26,6 +25,7 @@ def draw_the_map():
     labels = [label_from_nedbor(n) for n in nedborAar]
     for i, y in enumerate(xr):
         axMap.text(xr[i], yr[i], s=labels[i], color='white', fontsize=10, ha='center', va='center')
+
 
 def index_from_nedbor(x):
     if x < 1300: return 0
@@ -62,14 +62,19 @@ def on_click(event) :
     draw_the_map()
     axMap.set_title(f"C: ({x:.1f},{y:.1f}) - click rød er estimert")
 
-
     axMap.text(x, y, s=label_from_nedbor(aarsnedbor), color='white', fontsize=10, ha='center', va='center')
     axGraph.set_title(f"Nedbør per måned, Årsnedbør {int(aarsnedbor)} mm")
+
 
     colorsPred = [color_from_nedbor(nedbor * 12) for nedbor in y_pred]
     axMap.scatter(x, y, c=color_from_nedbor(aarsnedbor), s=size_from_nedbor(aarsnedbor) * 3.5, marker="o")
     axMap.scatter(x, y, c="red", s=size_from_nedbor(aarsnedbor)*2.5, marker="o")
     axGraph.bar(months, y_pred, color=colorsPred)
+    gjennomsnitt=(aarsnedbor/12)
+    txt="Gjennomsnitt:{:.2f}mm"
+    axGraph.axhline(y=gjennomsnitt, xmin=0, xmax=1, color='red', linestyle='-', linewidth=2, alpha=0.8)
+    axGraph.text (x=0.2, y=(aarsnedbor/12)+3, s=txt.format(gjennomsnitt), fontsize=10, color='#FF0000', alpha=1, weight='bold')
+    axGraph.grid(visible=False, which='major', axis='y', linestyle='-', linewidth=0.5, color='black')
     draw_label_and_ticks()
     plt.draw()
 
@@ -77,6 +82,8 @@ def draw_label_and_ticks():
     xlabels = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
     axGraph.set_xticks(np.linspace(1, 12, 12))
     axGraph.set_xticklabels(xlabels)
+
+
 
 # Create the figures
 fig = plt.figure(figsize=(10, 4))
