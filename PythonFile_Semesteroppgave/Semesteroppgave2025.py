@@ -74,7 +74,7 @@ def on_click(event) :
     axMap.set_title(f"C: ({x:.1f},{y:.1f}) - click rød er estimert")
 
 
-    axMap.text(x, y, s=label_from_nedbor(aarsnedbor), color='white', fontsize=10, ha='center', va='center')
+    axMap.text(x, y, s=label_from_nedbor(aarsnedbor), color='white', fontsize=8, ha='center', va='center')
     axGraph.set_title(f"Nedbør per måned, Årsnedbør {int(aarsnedbor)} mm")
 
     doc = minidom.parse("cloud.svg")
@@ -85,9 +85,10 @@ def on_click(event) :
     svg_path = parse_path(path_strings[0])
     svg_path = svg_path.transformed(mtransforms.Affine2D().scale(1, -1))
     svg_path.vertices -= svg_path.vertices.mean(axis=0)
+    svg_path.vertices += [-20,14]
 
     colorsPred = [color_from_nedbor(nedbor * 12) for nedbor in y_pred]
-    axMap.scatter(x, y, c=color_from_nedbor(aarsnedbor), s=size_from_nedbor(aarsnedbor) * 3.5, marker=svg_path)
+    axMap.scatter(x, y, c=color_from_nedbor(aarsnedbor), s=size_from_nedbor(aarsnedbor) * 2, marker=svg_path)
     axGraph.bar(months, y_pred, color=colorsPred)
 
     plt.show()
