@@ -46,6 +46,8 @@ def draw_the_map():
     labels = [label_from_nedbor(n) for n in nedborAar]
     for i, y in enumerate(xr):
         axMap.text(xr[i], yr[i], s=labels[i], color='white', fontsize=8, ha='center', va='center')
+    axMap.set_title(f"Årsnedbør Stor Bergen")
+
 
 def index_from_nedbor(x):
     if x < 1300: return 0
@@ -80,7 +82,6 @@ def on_click(event) :
     aarsnedbor = sum(y_pred)
     axGraph.cla()
     draw_the_map()
-    axMap.set_title(f"C: ({x:.1f},{y:.1f}) - click rød er estimert")
 
 
     axMap.text(x, y, s=label_from_nedbor(aarsnedbor), color='white', fontsize=8, ha='center', va='center')
@@ -142,6 +143,13 @@ r_squared = r2_score(Y_test, Y_pred)
 print(f"R-squared: {r_squared:.2f}")
 print('mean_absolute_error (mnd) : ', mean_absolute_error(Y_test, Y_pred))
 
+colors = [ '#5dbcc6', '#458e96', '#356c72', '#23484c', '#172d30']
+draw_the_map()
+
+
+plt.connect('button_press_event', on_click)
+plt.show()
+
 
 
 
@@ -176,7 +184,7 @@ def draw_the_map():
     labels = [label_from_temperatur(t) for t in TemperaturAar]
     for i, y in enumerate(xr):
         axMap.text(xr[i], yr[i], s=labels[i], color='black', fontsize=8, ha='center', va='center')
-
+    axMap.set_title(f"Årstemperatur Stor Bergen")
 
 def index_from_temperaturr(x):
     if x < 1300: return 0
@@ -217,14 +225,14 @@ def on_click(event):
     aarstemperatur = sum(y_pred)
     axGraph.cla()
     draw_the_map()
-    axMap.set_title(f"C: ({x:.1f},{y:.1f}) - click rød er estimert")
+
 
     axMap.text(x, y, s=label_from_temperatur(aarstemperatur), color='black', fontsize=8, ha='center', va='center')
     axGraph.set_title(f"Temperatur per måned, Årstemperatur {int(aarstemperatur)}")
 
 
 
-    axMap.scatter(x, y, c='#ffee56', s=size_from_nedbor(aarstemperatur) * 2, marker='o')
+    axMap.scatter(x, y, c='#efd051', s=size_from_nedbor(aarstemperatur) * 1.25, marker='o')
     axGraph.bar(months, y_pred, color='#ffee56')
     draw_label_and_ticks()
     plt.draw()
@@ -250,7 +258,6 @@ axMap.axis('off')
 fig.subplots_adjust(left=0, right=1, top=1, bottom=0)  # Adjust the figure to fit the image
 axMap.margins(x=0.01, y=0.01)  # Adjust x and y margins
 
-colors = [ '#5dbcc6', '#458e96', '#356c72', '#23484c', '#172d30']
 draw_the_map()
 
 plt.connect('button_press_event', on_click)
