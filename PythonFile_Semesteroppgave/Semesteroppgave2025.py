@@ -28,15 +28,24 @@ def draw_the_map():
     axMap.cla()
     plt.imshow(img, extent=(0, 13, 0, 10))
 
+    doc = minidom.parse("cloud.svg")
+    path_strings = [p.getAttribute('d') for p in doc.getElementsByTagName('path')]
+    doc.unlink()
+
+    svg_path = parse_path(path_strings[0])
+    svg_path = svg_path.transformed(mtransforms.Affine2D().scale(1, -1))
+    svg_path.vertices -= svg_path.vertices.mean(axis=0)
+    svg_path.vertices += [-20, 14]
+
     df_year = df.groupby(['X', 'Y']).agg({'Nedbor': 'sum'}).reset_index()
     xr = df_year['X'].tolist()
     yr = df_year['Y'].tolist()
     nedborAar = df_year['Nedbor']
     ColorList = [color_from_nedbor(n) for n in nedborAar]
-    axMap.scatter(xr, yr, c=ColorList, s=size_from_nedbor(nedborAar/12), alpha=1)
+    axMap.scatter(xr, yr, c=ColorList, s=size_from_nedbor(nedborAar/12), marker=svg_path)
     labels = [label_from_nedbor(n) for n in nedborAar]
     for i, y in enumerate(xr):
-        axMap.text(xr[i], yr[i], s=labels[i], color='white', fontsize=10, ha='center', va='center')
+        axMap.text(xr[i], yr[i], s=labels[i], color='white', fontsize=8, ha='center', va='center')
 
 def index_from_nedbor(x):
     if x < 1300: return 0
