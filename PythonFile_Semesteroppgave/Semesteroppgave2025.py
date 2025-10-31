@@ -146,6 +146,14 @@ print('mean_absolute_error (mnd) : ', mean_absolute_error(Y_test, Y_pred))
 colors = [ '#5dbcc6', '#458e96', '#356c72', '#23484c', '#172d30']
 draw_the_map()
 
+plt.legend(
+    loc='upper left',
+    title='Test',
+    fontsize='8',
+    frameon=True,
+    shadow=True
+)
+
 
 plt.connect('button_press_event', on_click)
 plt.show()
