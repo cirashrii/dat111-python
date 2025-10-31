@@ -1,18 +1,13 @@
 # importing modules and packages
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from matplotlib import image as mpimg
-from matplotlib.backends.backend_svg import svgProlog
-from mpl_toolkits.mplot3d.proj3d import transform
-from scipy.ndimage import rotate
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-from sklearn import preprocessing
 from sklearn.preprocessing import PolynomialFeatures
 from IPython.display import SVG, display
-
+from matplotlib.widgets import Button
 from svgpath2mpl import parse_path
 from xml.dom import minidom
 import matplotlib.pyplot as plt
