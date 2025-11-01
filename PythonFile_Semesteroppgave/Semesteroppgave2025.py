@@ -243,7 +243,7 @@ def on_click(event):
     # fitting the model, and predict for each month
     AtPointM = poly.fit_transform(AtPoint)
     y_pred = model.predict(AtPointM)
-    aarstemperatur = sum(y_pred)
+    aarstemperatur = sum(y_pred)/12
     axGraph.cla()
     draw_the_map()
 
