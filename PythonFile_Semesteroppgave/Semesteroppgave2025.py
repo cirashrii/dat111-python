@@ -175,6 +175,8 @@ plt.show()
 
 
 
+
+
 # Read temp data, and split in train and test.py data
 df = pd.read_csv('TemperaturX.csv')
 marked_point = (0,0)
