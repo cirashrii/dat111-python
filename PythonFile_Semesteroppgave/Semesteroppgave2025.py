@@ -17,6 +17,14 @@ import matplotlib.transforms as mtransforms
 
 display(SVG(filename='cloud.svg'))
 
+nedbor_visning = True
+
+def bytt_til_nedbor(event):
+    nedbor_visning = True
+
+def bytt_til_temperatur(event):
+    nedbor_visning = False
+
 
 def draw_the_map():
     # Accumulate all months to year
@@ -86,7 +94,7 @@ def on_click(event) :
     path_strings = [p.getAttribute('d') for p in doc.getElementsByTagName('path')]
     doc.unlink()
 
-#svg pointer
+    #svg pointer
     svg_path = parse_path(path_strings[0])
     svg_path = svg_path.transformed(mtransforms.Affine2D().scale(1, -1))
     svg_path.vertices -= svg_path.vertices.mean(axis=0)
@@ -105,9 +113,9 @@ def draw_label_and_ticks():
     axGraph.set_xticklabels(xlabels)
 
 # Create the figures
-fig = plt.figure(figsize=(10, 4))
-axGraph = fig.add_axes((0.05, 0.07, 0.35, 0.85))
-axMap = fig.add_axes((0.41, 0.07, 0.59, 0.85))
+fig = plt.figure(figsize=(10, 6))
+axGraph = fig.add_axes((0.05, 0.3, 0.35, 0.62))
+axMap = fig.add_axes((0.41, 0.3, 0.59, 0.62))
 draw_label_and_ticks()
 img = mpimg.imread('StorBergen2.png')
 axMap.set_title("Årsnedbør Stor Bergen")
@@ -148,6 +156,14 @@ plt.legend(
     frameon=True,
     shadow=True
 )
+
+axButn1 = plt.axes((0.1, 0.1, 0.3, 0.1))
+btn1 = Button(    axButn1, label="nedbør", color='lightblue', hovercolor='tomato')
+btn1.on_clicked(bytt_til_nedbor)
+
+axButn2 = plt.axes((0.55, 0.1, 0.3, 0.1))
+btn2 = Button( axButn2, label="temperatur", color='orange', hovercolor='tomato')
+btn2.on_clicked(bytt_til_temperatur)
 
 
 plt.connect('button_press_event', on_click)
