@@ -157,19 +157,19 @@ plt.legend(
     shadow=True
 )
 
-axButn1 = plt.axes((0.1, 0.1, 0.3, 0.1))
-btn1 = Button(    axButn1, label="nedbør", color='lightblue', hovercolor='tomato')
-btn1.on_clicked(bytt_til_nedbor)
-
-axButn2 = plt.axes((0.55, 0.1, 0.3, 0.1))
-btn2 = Button( axButn2, label="temperatur", color='orange', hovercolor='tomato')
-btn2.on_clicked(bytt_til_temperatur)
-
 
 plt.connect('button_press_event', on_click)
 plt.show()
 
 
+#Button
+#axButn1 = plt.axes((0.1, 0.1, 0.3, 0.1))
+#btn1 = Button(    axButn1, label="nedbør", color='lightblue', hovercolor='tomato')
+#btn1.on_clicked(bytt_til_nedbor)
+
+#axButn2 = plt.axes((0.55, 0.1, 0.3, 0.1))
+#btn2 = Button( axButn2, label="temperatur", color='orange', hovercolor='tomato')
+#btn2.on_clicked(bytt_til_temperatur)
 
 
 
