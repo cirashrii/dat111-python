@@ -2,7 +2,7 @@
 import pandas as pd
 import random
 
-df = pd.read_csv('Nedbor.csv')
+df = pd.read_csv('nedbor.csv')
 df["Month"] = 12
 month = list(range(1,12))
 

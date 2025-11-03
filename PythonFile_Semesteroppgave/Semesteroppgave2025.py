@@ -2,26 +2,50 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import image as mpimg
+from matplotlib.backends.backend_svg import svgProlog
+from mpl_toolkits.mplot3d.proj3d import transform
+from scipy.ndimage import rotate
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn import preprocessing
-import matplotlib.image as mpimg
 from sklearn.preprocessing import PolynomialFeatures
+from IPython.display import SVG, display
+
+from svgpath2mpl import parse_path
+from xml.dom import minidom
+import matplotlib.pyplot as plt
+import matplotlib.transforms as mtransforms
+
+
+
+display(SVG(filename='cloud.svg'))
+
 
 def draw_the_map():
     # Accumulate all months to year
     axMap.cla()
     plt.imshow(img, extent=(0, 13, 0, 10))
+
+    doc = minidom.parse("cloud.svg")
+    path_strings = [p.getAttribute('d') for p in doc.getElementsByTagName('path')]
+    doc.unlink()
+
+    svg_path = parse_path(path_strings[0])
+    svg_path = svg_path.transformed(mtransforms.Affine2D().scale(1, -1))
+    svg_path.vertices -= svg_path.vertices.mean(axis=0)
+    svg_path.vertices += [-20, 14]
+
     df_year = df.groupby(['X', 'Y']).agg({'Nedbor': 'sum'}).reset_index()
     xr = df_year['X'].tolist()
     yr = df_year['Y'].tolist()
     nedborAar = df_year['Nedbor']
     ColorList = [color_from_nedbor(n) for n in nedborAar]
-    axMap.scatter(xr, yr, c=ColorList, s=size_from_nedbor(nedborAar/12), alpha=1)
+    axMap.scatter(xr, yr, c=ColorList, s=size_from_nedbor(nedborAar/12) * 2, marker=svg_path)
     labels = [label_from_nedbor(n) for n in nedborAar]
     for i, y in enumerate(xr):
-        axMap.text(xr[i], yr[i], s=labels[i], color='white', fontsize=10, ha='center', va='center')
+        axMap.text(xr[i], yr[i], s=labels[i], color='white', fontsize=8, ha='center', va='center')
 
 def index_from_nedbor(x):
     if x < 1300: return 0
@@ -59,15 +83,27 @@ def on_click(event) :
     axMap.set_title(f"C: ({x:.1f},{y:.1f}) - click rød er estimert")
 
 
-    axMap.text(x, y, s=label_from_nedbor(aarsnedbor), color='white', fontsize=10, ha='center', va='center')
+    axMap.text(x, y, s=label_from_nedbor(aarsnedbor), color='white', fontsize=8, ha='center', va='center')
     axGraph.set_title(f"Nedbør per måned, Årsnedbør {int(aarsnedbor)} mm")
 
+    doc = minidom.parse("cloud.svg")
+    path_strings = [p.getAttribute('d') for p in doc.getElementsByTagName('path')]
+    doc.unlink()
+
+#svg pointer
+    svg_path = parse_path(path_strings[0])
+    svg_path = svg_path.transformed(mtransforms.Affine2D().scale(1, -1))
+    svg_path.vertices -= svg_path.vertices.mean(axis=0)
+    svg_path.vertices += [-20,14]
+
     colorsPred = [color_from_nedbor(nedbor * 12) for nedbor in y_pred]
-    axMap.scatter(x, y, c=color_from_nedbor(aarsnedbor), s=size_from_nedbor(aarsnedbor) * 3.5, marker="o")
-    axMap.scatter(x, y, c="red", s=size_from_nedbor(aarsnedbor)*2.5, marker="o")
+    axMap.scatter(x, y, c=color_from_nedbor(aarsnedbor), s=size_from_nedbor(aarsnedbor) * 2, marker=svg_path)
     axGraph.bar(months, y_pred, color=colorsPred)
+
     draw_label_and_ticks()
-    plt.draw()
+
+    plt.show()
+
 
 def draw_label_and_ticks():
     xlabels = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
@@ -107,7 +143,7 @@ r_squared = r2_score(Y_test, Y_pred)
 print(f"R-squared: {r_squared:.2f}")
 print('mean_absolute_error (mnd) : ', mean_absolute_error(Y_test, Y_pred))
 
-colors = [ 'teal', 'green', 'blue', 'darkblue', 'black']
+colors = [ '#5dbcc6', '#458e96', '#356c72', '#23484c', '#172d30']
 draw_the_map()
 
 plt.connect('button_press_event', on_click)
