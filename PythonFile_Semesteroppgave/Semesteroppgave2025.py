@@ -108,7 +108,7 @@ def on_click(event) :
     axGraph.axhline(y=gjennomsnitt, xmin=0, xmax=1, color='yellow', linestyle='-', linewidth=2, alpha=0.8)
     axGraph.text(x=0.2, y=(aarsnedbor / 12) + 3, s=txt.format(gjennomsnitt), fontsize=10, color='yellow', alpha=1,
                  weight='bold')
-    axGraph.grid(visible=False, which='major', axis='y', linestyle='-', linewidth=0.5, color='black')
+    axGraph.grid(visible=True, which='major', axis='y', linestyle='-', linewidth=0.5, color='black')
     draw_label_and_ticks()
     plt.show()
 
