@@ -211,7 +211,7 @@ def draw_the_map():
     labels = [label_from_temperatur(t) for t in TemperaturAar/12]
     for i, y in enumerate(xr):
         axMap.text(xr[i], yr[i], s=labels[i], color='black', fontsize=8, ha='center', va='center')
-    axMap.set_title(f"Årstemperatur Stor Bergen")
+    axMap.set_title(f"Gjennomsnittstemperatur Stor Bergen")
 
 def index_from_temperaturr(x):
     if x < 1300: return 0
