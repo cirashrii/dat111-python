@@ -4,7 +4,7 @@ import numpy as np
 from matplotlib import image as mpimg
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from sklearn.metrics import mean_absolute_error, r2_score
 from sklearn.preprocessing import PolynomialFeatures
 from IPython.display import SVG, display
 from svgpath2mpl import parse_path
@@ -12,9 +12,6 @@ from xml.dom import minidom
 import matplotlib.pyplot as plt
 import matplotlib.transforms as mtransforms
 from matplotlib.widgets import Button
-
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import tkinter as tk
 
 fig = plt.figure(figsize=(6, 3.5))
 
@@ -295,14 +292,6 @@ btn2.label.set_fontsize(14)
 btn2.on_clicked(plot2)
 
 plt.show()
-root = tk.Tk()
-root.title("Plot Example")
-
-
-button = tk.Button(root, text="Show Graph", command=plot1)
-button.pack(pady=20)
-
-root.mainloop()
 
 
 
