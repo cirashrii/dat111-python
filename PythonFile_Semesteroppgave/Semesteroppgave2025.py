@@ -105,8 +105,8 @@ def on_click(event) :
     axGraph.bar(months, y_pred, color=colorsPred)
     gjennomsnitt = (aarsnedbor / 12)
     txt = "Gjennomsnitt:{:.2f}mm"
-    axGraph.axhline(y=gjennomsnitt, xmin=0, xmax=1, color='yellow', linestyle='-', linewidth=2, alpha=0.8)
-    axGraph.text(x=0.2, y=(aarsnedbor / 12) + 3, s=txt.format(gjennomsnitt), fontsize=10, color='yellow', alpha=1,
+    axGraph.axhline(y=gjennomsnitt, xmin=0, xmax=1, color='#ea9d02', linestyle='-', linewidth=2, alpha=0.8)
+    axGraph.text(x=0.2, y=(aarsnedbor / 12) + 3, s=txt.format(gjennomsnitt), fontsize=10, color='#ea9d02', alpha=1,
                  weight='bold')
     axGraph.grid(visible=True, which='major', axis='y', linestyle='-', linewidth=0.5, color='black')
     draw_label_and_ticks()
@@ -256,6 +256,13 @@ def on_click(event):
 
     axMap.text(x, y, s=label_from_temperatur(aarstemperatur), color='black', fontsize=8, ha='center', va='center')
     axGraph.set_title(f"Temperatur per måned, Årstemperatur {int(aarstemperatur)}")
+
+    gjennomsnitt = (aarstemperatur)
+    txt = "Gjennomsnitt:{:.2f}C"
+    axGraph.axhline(y=gjennomsnitt, xmin=0, xmax=1, color='#ea9d02', linestyle='-', linewidth=2, alpha=0.8)
+    axGraph.text(x=0.2, y=(aarstemperatur / 12) + 3, s=txt.format(gjennomsnitt), fontsize=10, color='#ea9d02', alpha=1,
+                 weight='bold')
+
 
 
 
