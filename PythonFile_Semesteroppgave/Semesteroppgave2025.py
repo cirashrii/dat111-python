@@ -7,11 +7,14 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.preprocessing import PolynomialFeatures
 from IPython.display import SVG, display
-from matplotlib.widgets import Button
 from svgpath2mpl import parse_path
 from xml.dom import minidom
 import matplotlib.pyplot as plt
 import matplotlib.transforms as mtransforms
+from matplotlib.widgets import Button
+
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import tkinter as tk
 
 
 def plot1(event):
@@ -108,6 +111,7 @@ def plot1(event):
         axGraph.text(x=0.2, y=(aarsnedbor / 12) + 3, s=txt.format(gjennomsnitt), fontsize=10, color='#ea9d02', alpha=1,
                      weight='bold')
         draw_label_and_ticks()
+        plt.show()
 
 
     def draw_label_and_ticks():
@@ -154,17 +158,13 @@ def plot1(event):
 
 
     plt.connect('button_press_event', on_click)
+    plt.show()
 
 
 #Button
 axButn1 = plt.axes((0.1, 0.1, 0.3, 0.1))
 btn1 = Button(    axButn1, label="nedbør", color='lightblue', hovercolor='tomato')
 btn1.on_clicked(plot1)
-
-
-
-
-
 
 def plot2(event):
     # Read temp data, and split in train and test.py data
@@ -286,12 +286,21 @@ def plot2(event):
     draw_the_map()
 
     plt.connect('button_press_event', on_click)
+    plt.show()
 
 axButn2 = plt.axes((0.55, 0.1, 0.3, 0.1))
 btn2 = Button( axButn2, label="temperatur", color='orange', hovercolor='tomato')
 btn2.on_clicked(plot2)
 
-
 plt.show()
+root = tk.Tk()
+root.title("Plot Example")
+
+
+button = tk.Button(root, text="Show Graph", command=plot1)
+button.pack(pady=20)
+
+root.mainloop()
+
 
 
