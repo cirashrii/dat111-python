@@ -16,9 +16,11 @@ from matplotlib.widgets import Button
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import tkinter as tk
 
+fig = plt.figure(figsize=(6, 3.5))
+
 axTextbox = plt.axes((0.5, 0.3, 0.3, 0.4))
 axTextbox.axis('off')
-plt.text(0,1,"Her kan du finne oversikten over \nnedbøren og temperaturen i Bergen.\nTrykk på relevant knapp for å se grafen.\nKos deg :) -Gruppe 1",
+plt.text(0,1,"Her kan du finne oversikten over \nnedbøren og temperaturen i Bergen.\nTrykk på relevant knapp for å se grafen.\nKos deg :)  -Gruppe 1",
          fontsize="16",
          ha="center",
          va="center")
@@ -118,9 +120,9 @@ def plot1(event):
         axGraph.set_xticklabels(xlabels)
 
     # Create the figures
-    fig = plt.figure(figsize=(10, 6))
-    axGraph = fig.add_axes((0.05, 0.3, 0.35, 0.62))
-    axMap = fig.add_axes((0.41, 0.3, 0.59, 0.62))
+    fig = plt.figure(figsize=(10, 4))
+    axGraph = fig.add_axes((0.05, 0.07, 0.35, 0.85))
+    axMap = fig.add_axes((0.41, 0.07, 0.59, 0.85))
     draw_label_and_ticks()
     img = mpimg.imread('StorBergen2.png')
     axMap.set_title("Årsnedbør Stor Bergen")
@@ -160,8 +162,9 @@ def plot1(event):
 
 
 #Button
-axButn1 = plt.axes((0.1, 0.1, 0.3, 0.1))
-btn1 = Button(    axButn1, label="nedbør", color='lightblue', hovercolor='tomato')
+axButn1 = plt.axes((0.1, 0.2, 0.3, 0.15))
+btn1 = Button(    axButn1, label="Nedbør", color='lightblue', hovercolor='tomato')
+btn1.label.set_fontsize(14)
 btn1.on_clicked(plot1)
 
 def plot2(event):
@@ -286,8 +289,9 @@ def plot2(event):
     plt.connect('button_press_event', on_click)
     plt.show()
 
-axButn2 = plt.axes((0.55, 0.1, 0.3, 0.1))
-btn2 = Button( axButn2, label="temperatur", color='orange', hovercolor='tomato')
+axButn2 = plt.axes((0.55, 0.2, 0.3, 0.15))
+btn2 = Button( axButn2, label="Temperatur", color='orange', hovercolor='tomato')
+btn2.label.set_fontsize(14)
 btn2.on_clicked(plot2)
 
 plt.show()
