@@ -16,17 +16,15 @@ from matplotlib.widgets import Button
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import tkinter as tk
 
+axTextbox = plt.axes((0.5, 0.3, 0.3, 0.4))
+axTextbox.axis('off')
+plt.text(0,1,"Her kan du finne oversikten over \nnedbøren og temperaturen i Bergen.\nTrykk på relevant knapp for å se grafen.\nKos deg :) -Gruppe 1",
+         fontsize="16",
+         ha="center",
+         va="center")
 
 def plot1(event):
     display(SVG(filename='cloud.svg'))
-
-    nedbor_visning = True
-
-    def bytt_til_nedbor(event):
-        nedbor_visning = True
-
-    def bytt_til_temperatur(event):
-        nedbor_visning = False
 
     def draw_the_map():
         # Accumulate all months to year
