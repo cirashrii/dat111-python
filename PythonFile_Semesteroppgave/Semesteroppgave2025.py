@@ -108,7 +108,6 @@ def on_click(event) :
     axGraph.axhline(y=gjennomsnitt, xmin=0, xmax=1, color='#ea9d02', linestyle='-', linewidth=2, alpha=0.8)
     axGraph.text(x=0.2, y=(aarsnedbor / 12) + 3, s=txt.format(gjennomsnitt), fontsize=10, color='#ea9d02', alpha=1,
                  weight='bold')
-    axGraph.grid(visible=True, which='major', axis='y', linestyle='-', linewidth=0.5, color='black')
     draw_label_and_ticks()
     plt.show()
 
@@ -207,22 +206,26 @@ def draw_the_map():
     xr = df_year['X'].tolist()
     yr = df_year['Y'].tolist()
     TemperaturAar = df_year['Temperatur']
-    axMap.scatter(xr, yr, c='#ffee56', s=size_from_temperatur(TemperaturAar / 12) * 1, marker='o')
+    ColorList = [color_from_temperatur(t) for t in TemperaturAar/12]
+
+
+
+    axMap.scatter(xr, yr, c=ColorList, s=size_from_temperatur(TemperaturAar / 12) * 1, marker='o')
     labels = [label_from_temperatur(t) for t in TemperaturAar/12]
     for i, y in enumerate(xr):
         axMap.text(xr[i], yr[i], s=labels[i], color='black', fontsize=8, ha='center', va='center')
     axMap.set_title(f"Gjennomsnittstemperatur Stor Bergen")
 
-def index_from_temperaturr(x):
-    if x < 1300: return 0
-    if x < 1700: return 1
-    if x < 2500: return 2
-    if x < 3200: return 3
+def index_from_temperatur(x):
+    if x < 10: return 0
+    if x < 15: return 1
+    if x < 20: return 2
+    if x < 40: return 3
     return 4
 
 
-def color_from_teperatur(temperatur):
-    return colors[index_from_nedbor(temperatur)]
+def color_from_temperatur(temperatur):
+    return tempColors[index_from_temperatur(temperatur)]
 
 
 def size_from_temperatur(temperatur):
@@ -259,15 +262,16 @@ def on_click(event):
 
     gjennomsnitt = (aarstemperatur)
     txt = "Gjennomsnitt:{:.2f}C"
-    axGraph.axhline(y=gjennomsnitt, xmin=0, xmax=1, color='#ea9d02', linestyle='-', linewidth=2, alpha=0.8)
-    axGraph.text(x=0.2, y=(aarstemperatur / 12) + 3, s=txt.format(gjennomsnitt), fontsize=10, color='#ea9d02', alpha=1,
+    axGraph.axhline(y=gjennomsnitt, xmin=0, xmax=1, color='#b70707', linestyle='-', linewidth=2, alpha=0.8)
+    axGraph.text(x=0.2, y=(aarstemperatur)+0.5, s=txt.format(gjennomsnitt), fontsize=10, color='#b70707', alpha=1,
                  weight='bold')
 
 
 
+    colorsPred = [color_from_temperatur(temperatur) for temperatur in y_pred]
 
-    axMap.scatter(x, y, c='#efd051', s=size_from_nedbor(aarstemperatur) * 1.25, marker='o')
-    axGraph.bar(months, y_pred, color='#ffee56')
+    axMap.scatter(x, y, c=color_from_temperatur(aarstemperatur), s=size_from_nedbor(aarstemperatur) * 1.25, marker='o')
+    axGraph.bar(months, y_pred, color=colorsPred)
     draw_label_and_ticks()
     plt.draw()
 
@@ -291,6 +295,8 @@ axMap.axis('off')
 
 fig.subplots_adjust(left=0, right=1, top=1, bottom=0)  # Adjust the figure to fit the image
 axMap.margins(x=0.01, y=0.01)  # Adjust x and y margins
+
+tempColors = [ '#fcf341', '#f9c32c', '#ef7e04', '#d14545', '#560505']
 
 draw_the_map()
 
