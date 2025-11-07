@@ -208,7 +208,7 @@ def draw_the_map():
     yr = df_year['Y'].tolist()
     TemperaturAar = df_year['Temperatur']
     axMap.scatter(xr, yr, c='#ffee56', s=size_from_temperatur(TemperaturAar / 12) * 1, marker='o')
-    labels = [label_from_temperatur(t) for t in TemperaturAar]
+    labels = [label_from_temperatur(t) for t in TemperaturAar/12]
     for i, y in enumerate(xr):
         axMap.text(xr[i], yr[i], s=labels[i], color='black', fontsize=8, ha='center', va='center')
     axMap.set_title(f"Årstemperatur Stor Bergen")
