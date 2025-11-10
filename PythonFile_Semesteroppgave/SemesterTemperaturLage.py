@@ -6,8 +6,8 @@ df = pd.read_csv('temperatur.csv')
 df["Month"] = 12
 month = list(range(1,12))
 
-monthfactor1 = [0,100,100,110,80,70,80,110,110,120,120,150,200]
-monthfactor2 = [0,100,100,100,100,80,100,120,200,200,150,130,120]
+monthfactor1 = [200,150,120,120,110,110,80,70,80,110,100,100,0]
+monthfactor2 = [120,130,150,200,200,120,100,80,100,100,100,100,0]
 
 df2 = pd.DataFrame(columns=['X','Y','Temperatur','Month'])
 rows = len(df)
