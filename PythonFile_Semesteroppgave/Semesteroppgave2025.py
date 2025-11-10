@@ -18,11 +18,42 @@ from xml.dom import minidom
 import matplotlib.pyplot as plt
 import matplotlib.transforms as mtransforms
 from matplotlib.widgets import RadioButtons
+from matplotlib.patches import Patch
 vis_modus = 'Måned'
 
 
 display(SVG(filename='cloud.svg'))
 
+
+def legg_til_fargeforklaring(ax):
+    terskler = [1300, 1700, 2500, 3200]
+    labels = [
+        f"<{terskler[0]} mm",
+        f"{terskler[0]}-{terskler[1]-1} mm",
+        f"{terskler[1]}-{terskler[2]-1} mm",
+        f"{terskler[2]}-{terskler[3]-1}mm",
+        f"≥ {terskler[3]}mm",
+    ]
+
+    handles = [Patch(facecolor=c, edgecolor="black", linewidth=0.5) for c in colors]
+
+    leg = ax.legend(
+        handles,
+        labels,
+        title="Årsnedbør (fargekode)",
+        loc="lower left",
+        frameon=True,
+        borderpad=0.6,
+        labelspacing=0.5,
+        handlelength=1.6,
+        handletextpad=0.6,
+    )
+
+    try:
+        leg._legend_box.align ="left"
+    except Exception:
+        pass
+    return leg
 
 def draw_the_map():
     # Accumulate all months to year
@@ -47,6 +78,7 @@ def draw_the_map():
     labels = [label_from_nedbor(n) for n in nedborAar]
     for i, y in enumerate(xr):
         axMap.text(xr[i], yr[i], s=labels[i], color='white', fontsize=8, ha='center', va='center')
+    legg_til_fargeforklaring(axMap)
 
 def index_from_nedbor(x):
     if x < 1300: return 0
@@ -186,5 +218,5 @@ draw_the_map()
 
 plt.connect('button_press_event', on_click)
 plt.show()
-
+legg_til_fargeforklaring(axMap)
 
