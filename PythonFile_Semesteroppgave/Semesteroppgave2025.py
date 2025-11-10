@@ -111,7 +111,7 @@ def month_to_quarter_data(y_pred):
         np.sum(y_pred[6:9]),
         np.sum(y_pred[9:12])
     ]
-    labels = ['K1', 'K2', 'K3', 'K4']
+    labels = ['Jan-Mar', 'Apr-Jun', 'Jul-Sep', 'Okt-Des']
     return labels, q_values
 
 def on_click(event) :
