@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import image as mpimg
 from matplotlib.backends.backend_svg import svgProlog
-from mpl_toolkits.mplot3d.proj3d import transform
+#from mpl_toolkits.mplot3d.proj3d import transform
 from scipy.ndimage import rotate
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
@@ -17,7 +17,8 @@ from svgpath2mpl import parse_path
 from xml.dom import minidom
 import matplotlib.pyplot as plt
 import matplotlib.transforms as mtransforms
-
+from matplotlib.widgets import RadioButtons
+vis_modus = 'Måned'
 
 
 display(SVG(filename='cloud.svg'))
@@ -26,7 +27,7 @@ display(SVG(filename='cloud.svg'))
 def draw_the_map():
     # Accumulate all months to year
     axMap.cla()
-    plt.imshow(img, extent=(0, 13, 0, 10))
+    axMap.imshow(img, extent=(0, 13, 0, 10))
 
     doc = minidom.parse("cloud.svg")
     path_strings = [p.getAttribute('d') for p in doc.getElementsByTagName('path')]
@@ -60,6 +61,15 @@ def size_from_nedbor(nedbor):
     return 350
 def label_from_nedbor(nedbor):
     return str(int(nedbor / 100))
+def month_to_quarter_data(y_pred):
+    q_values = [
+        np.sum(y_pred[0:3]),
+        np.sum(y_pred[3:6]),
+        np.sum(y_pred[6:9]),
+        np.sum(y_pred[9:12])
+    ]
+    labels = ['K1', 'K2', 'K3', 'K4']
+    return labels, q_values
 
 def on_click(event) :
     global marked_point
@@ -96,11 +106,21 @@ def on_click(event) :
     svg_path.vertices -= svg_path.vertices.mean(axis=0)
     svg_path.vertices += [-20,14]
 
-    colorsPred = [color_from_nedbor(nedbor * 12) for nedbor in y_pred]
+  #  colorsPred = [color_from_nedbor(nedbor * 12) for nedbor in y_pred]
     axMap.scatter(x, y, c=color_from_nedbor(aarsnedbor), s=size_from_nedbor(aarsnedbor) * 2, marker=svg_path)
-    axGraph.bar(months, y_pred, color=colorsPred)
+  #  axGraph.bar(months, y_pred, color=colorsPred)
 
-    draw_label_and_ticks()
+    if vis_modus == 'Måned':
+        colorsPred = [color_from_nedbor(n * 12) for n in y_pred]
+        axGraph.bar(months, y_pred, color=colorsPred)
+        draw_label_and_ticks()
+        axGraph.set_title(f"Nedbør per måned, Årsnedbør {int(aarsnedbor)} mm")
+
+    else:
+        q_labels, q_values = month_to_quarter_data(y_pred)
+        colorsQ = [color_from_nedbor(n * 4 * 12) for n in q_values]
+        axGraph.bar(np.arange(1, 5), q_values, tick_label=q_labels, color=colorsQ)
+        axGraph.set_title(f"Nedbør per kvartal, Årsnedbør {int(aarsnedbor)} mm")
 
     plt.show()
 
@@ -122,6 +142,24 @@ axMap.axis('off')
 
 fig.subplots_adjust(left=0, right=1, top=1, bottom=0) # Adjust the figure to fit the image
 axMap.margins(x=0.01, y=0.01)  # Adjust x and y margins
+
+axRadio = fig.add_axes((0.01, 0.94, 0.08, 0.06))
+radio = RadioButtons(axRadio, ('Måned', 'Kvartal'))
+
+def on_radio_change(label):
+    global vis_modus
+    vis_modus = label
+    if marked_point != (0,0):
+        class DummyEvent:
+            def __init__(self, x, y):
+                self.xdata = x
+                self.ydata = y
+                self.inaxes = axMap
+        on_click(DummyEvent(*marked_point))
+    else:
+        draw_the_map()
+        plt.draw()
+radio.on_clicked(on_radio_change)
 
 # Read rain data, and split in train and test.py data
 df = pd.read_csv('NedborX.csv')
