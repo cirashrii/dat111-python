@@ -80,21 +80,6 @@ def plot1(event):
         ]
         labels = ['K1', 'K2', 'K3', 'K4']
         return labels, q_values
-    def color_from_nedbor(nedbor):
-        return colors[index_from_nedbor(nedbor)]
-    def size_from_nedbor(nedbor):
-        return 350
-    def label_from_nedbor(nedbor):
-        return str(int(nedbor / 100))
-    def month_to_quarter_data(y_pred):
-        q_values = [
-            np.sum(y_pred[0:3]),
-            np.sum(y_pred[3:6]),
-            np.sum(y_pred[3:9]),
-            np.sum(y_pred[9:12]),
-        ]
-        labels = ['K1', 'K2', 'K3', 'K4']
-        return labels, q_values
 
     def on_click(event) :
         global marked_point
@@ -179,46 +164,18 @@ def plot1(event):
     fig.subplots_adjust(left=0, right=1, top=1, bottom=0) # Adjust the figure to fit the image
     axMap.margins(x=0.01, y=0.01)  # Adjust x and y margins
 
-axRadio = fig.add_axes((0.01, 0.94, 0.08, 0.06))
-radio = RadioButtons(axRadio, ('Måned', 'Kvartal'))
-
-def on_radio_change(label):
-    global vis_modus
-    vis_modus = label
-    if marked_point != (0,0):
-        class DummyEvent:
-            def __init__(self, x, y):
-                self.xdata = x
-                self.ydata = y
-                self.inaxes = axMap
-        on_click(DummyEvent(*marked_point))
-    else:
-        draw_the_map()
-        plt.draw()
-radio.on_clicked(on_radio_change)
-
-# Read rain data, and split in train and test.py data
-df = pd.read_csv('NedborX.csv')
-marked_point = (0,0)
-ns = df['Nedbor']
-X = df.drop('Nedbor',  axis=1)
-poly = PolynomialFeatures(degree=3)
-X_poly = poly.fit_transform(X)
-X_train, X_test, Y_train, Y_test = train_test_split(
-    X_poly, ns, test_size=0.25)
     axRadio = fig.add_axes((0.01, 0.94, 0.08, 0.06))
     radio = RadioButtons(axRadio, ('Måned', 'Kvartal'))
 
     def on_radio_change(label):
         global vis_modus
         vis_modus = label
-        if marked_point != (0, 0):
+        if marked_point != (0,0):
             class DummyEvent:
                 def __init__(self, x, y):
                     self.xdata = x
                     self.ydata = y
                     self.inaxes = axMap
-
             on_click(DummyEvent(*marked_point))
         else:
             draw_the_map()
@@ -234,6 +191,7 @@ X_train, X_test, Y_train, Y_test = train_test_split(
     X_poly = poly.fit_transform(X)
     X_train, X_test, Y_train, Y_test = train_test_split(
         X_poly, ns, test_size=0.25)
+
 
 
     # creating a regression model
