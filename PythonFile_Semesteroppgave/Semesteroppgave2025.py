@@ -91,7 +91,6 @@ def plot1(event):
         axMap.set_title(f"Årsnedbør Stor Bergen")
         legg_til_fargeforklaring(axMap)
 
-
     def index_from_nedbor(x):
         if x < 1300: return 0
         if x < 1700: return 1
@@ -179,7 +178,6 @@ def plot1(event):
 
         plt.show()
         legg_til_fargeforklaring(axMap)
-
 
     def draw_label_and_ticks():
         xlabels = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
