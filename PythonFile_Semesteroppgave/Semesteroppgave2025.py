@@ -9,8 +9,10 @@ from scipy.ndimage import rotate
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error, r2_score
+from sklearn import preprocessing
 from sklearn.preprocessing import PolynomialFeatures
 from IPython.display import SVG, display
+
 from svgpath2mpl import parse_path
 from xml.dom import minidom
 import matplotlib.pyplot as plt
@@ -18,7 +20,6 @@ import matplotlib.transforms as mtransforms
 from matplotlib.widgets import Button
 from matplotlib.widgets import RadioButtons
 
-from sklearn import preprocessing
 
 vis_modus ='Måned'
 
