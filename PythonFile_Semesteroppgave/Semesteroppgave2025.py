@@ -120,18 +120,24 @@ def plot1(event):
             axGraph.bar(months, y_pred, color=colorsPred)
             draw_label_and_ticks()
             axGraph.set_title(f"Nedbør per måned, Årsnedbør {int(aarsnedbor)} mm")
+            gjennomsnitt = (aarsnedbor / 12)
+            txt = "Gjennomsnitt:{:.2f}mm"
+            axGraph.axhline(y=gjennomsnitt, xmin=0, xmax=1, color='#ea9d02', linestyle='-', linewidth=2, alpha=0.8)
+            axGraph.text(x=0.2, y=(aarsnedbor / 12) + 3, s=txt.format(gjennomsnitt), fontsize=10, color='#ea9d02',
+                         alpha=1,
+                         weight='bold')
 
         else:
             q_labels, q_values = month_to_quarter_data(y_pred)
             colorsQ = [color_from_nedbor(n * 4) for n in q_values]
             axGraph.bar(np.arange(1, 5), q_values, tick_label=q_labels, color=colorsQ)
             axGraph.set_title(f"Nedbør per kvartal, Årsnedbør {int(aarsnedbor)} mm")
-
-        gjennomsnitt = (aarsnedbor / 12)
-        txt = "Gjennomsnitt:{:.2f}mm"
-        axGraph.axhline(y=gjennomsnitt, xmin=0, xmax=1, color='#ea9d02', linestyle='-', linewidth=2, alpha=0.8)
-        axGraph.text(x=0.2, y=(aarsnedbor / 12) + 3, s=txt.format(gjennomsnitt), fontsize=10, color='#ea9d02', alpha=1,
-                     weight='bold')
+            gjennomsnitt = (aarsnedbor / 4)
+            txt = "Gjennomsnitt:{:.2f}mm"
+            axGraph.axhline(y=gjennomsnitt, xmin=0, xmax=1, color='#ea9d02', linestyle='-', linewidth=2, alpha=0.8)
+            axGraph.text(x=0.2, y=(aarsnedbor / 4) + 3, s=txt.format(gjennomsnitt), fontsize=10, color='#ea9d02',
+                         alpha=1,
+                         weight='bold')
 
         plt.show()
 
