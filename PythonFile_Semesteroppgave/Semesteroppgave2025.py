@@ -172,7 +172,7 @@ def on_click(event) :
         gjennomsnitt = (aarsnedbor / 4)
         txt = "Gjennomsnitt:{:.2f}mm"
         axGraph.axhline(y=gjennomsnitt, xmin=0, xmax=1, color='#ea9d02', linestyle='-', linewidth=2, alpha=0.8)
-        axGraph.text(x=0.2, y=(aarsnedbor / 4) + 3, s=txt.format(gjennomsnitt), fontsize=10, color='#ea9d02',
+        axGraph.text(x=0.45, y=(aarsnedbor / 4) + 10, s=txt.format(gjennomsnitt), fontsize=10, color='#ea9d02',
                      alpha=1,
                      weight='bold')
 
