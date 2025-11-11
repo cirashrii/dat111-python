@@ -133,12 +133,13 @@ def plot1(event):
         AtPointM = poly.fit_transform(AtPoint)
         y_pred = model.predict(AtPointM)
         aarsnedbor = sum(y_pred)
-        axGraph.cla()
+        axGraphManad.cla()
+        axGraphKvartal.cla()
         draw_the_map()
 
 
         axMap.text(x, y, s=label_from_nedbor(aarsnedbor), color='white', fontsize=8, ha='left', va='center')
-        axGraph.set_title(f"Nedbør per måned, Årsnedbør {int(aarsnedbor)} mm")
+        axGraphManad.set_title(f"Nedbør per måned, Årsnedbør {int(aarsnedbor)} mm")
 
         doc = minidom.parse("cloud.svg")
         path_strings = [p.getAttribute('d') for p in doc.getElementsByTagName('path')]
@@ -156,25 +157,25 @@ def plot1(event):
 
         if vis_modus == 'Måned':
             colorsPred = [color_from_nedbor(n * 12) for n in y_pred]
-            axGraph.bar(months, y_pred, color=colorsPred)
+            axGraphManad.bar(months, y_pred, color=colorsPred)
             draw_label_and_ticks_maned()
-            axGraph.set_title(f"Nedbør per måned, Årsnedbør {int(aarsnedbor)} mm")
+            axGraphManad.set_title(f"Nedbør per måned, Årsnedbør {int(aarsnedbor)} mm")
             gjennomsnitt = (aarsnedbor / 12)
             txt = "Gjennomsnitt:{:.2f}mm"
-            axGraph.axhline(y=gjennomsnitt, xmin=0, xmax=1, color='#ea9d02', linestyle='-', linewidth=2, alpha=0.8)
-            axGraph.text(x=0.2, y=(aarsnedbor / 12) + 3, s=txt.format(gjennomsnitt), fontsize=10, color='#ea9d02',
+            axGraphManad.axhline(y=gjennomsnitt, xmin=0, xmax=1, color='#ea9d02', linestyle='-', linewidth=2, alpha=0.8)
+            axGraphManad.text(x=0.2, y=(aarsnedbor / 12) + 3, s=txt.format(gjennomsnitt), fontsize=10, color='#ea9d02',
                          alpha=1,
                          weight='bold')
 
         else:
             q_labels, q_values = month_to_quarter_data(y_pred)
             colorsQ = [color_from_nedbor(n * 4) for n in q_values]
-            axGraph.bar(np.arange(1, 5), q_values, tick_label=q_labels, color=colorsQ)
-            axGraph.set_title(f"Nedbør per kvartal, Årsnedbør {int(aarsnedbor)} mm")
+            axGraphManad.bar(np.arange(1, 5), q_values, tick_label=q_labels, color=colorsQ)
+            axGraphManad.set_title(f"Nedbør per kvartal, Årsnedbør {int(aarsnedbor)} mm")
             gjennomsnitt = (aarsnedbor / 4)
             txt = "Gjennomsnitt:{:.2f}mm"
-            axGraph.axhline(y=gjennomsnitt, xmin=0, xmax=1, color='#ea9d02', linestyle='-', linewidth=2, alpha=0.8)
-            axGraph.text(x=0.2, y=(aarsnedbor / 4) + 3, s=txt.format(gjennomsnitt), fontsize=10, color='#ea9d02',
+            axGraphManad.axhline(y=gjennomsnitt, xmin=0, xmax=1, color='#ea9d02', linestyle='-', linewidth=2, alpha=0.8)
+            axGraphManad.text(x=0.2, y=(aarsnedbor / 4) + 3, s=txt.format(gjennomsnitt), fontsize=10, color='#ea9d02',
                          alpha=1,
                          weight='bold')
 
@@ -183,17 +184,19 @@ def plot1(event):
 
     def draw_label_and_ticks_maned():
         xlabels = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
-        axGraph.set_xticks(np.linspace(1, 12, 12))
-        axGraph.set_xticklabels(xlabels)
+        axGraphManad.set_xticks(np.linspace(1, 12, 12))
+        axGraphManad.set_xticklabels(xlabels)
 
     # Create the figures
     fig = plt.figure(figsize=(10, 6))
-    axGraph = fig.add_axes((0.05, 0.17, 0.35, 0.67))
+    axGraphManad = fig.add_axes((0.05, 0.17, 0.35, 0.67))
+    axGraphKvartal = fig.add_axes((0.05, 0.17, 0.35, 0.67))
+    axGraphKvartal.set_visible(False)
     axMap = fig.add_axes((0.41, 0.17, 0.59, 0.67))
     draw_label_and_ticks_maned()
     img = mpimg.imread('StorBergen2.png')
     axMap.set_title("Årsnedbør Stor Bergen")
-    axGraph.set_title("Per måned")
+    axGraphManad.set_title("Per måned")
     axMap.axis('off')
 
     fig.subplots_adjust(left=0, right=1, top=1, bottom=0) # Adjust the figure to fit the image
@@ -218,11 +221,13 @@ def plot1(event):
     radio.on_clicked(on_radio_change)
 
     def manadsvisning(event):
-        axGraph.set_visible(True)
+        axGraphManad.set_visible(True)
+        axGraphKvartal.set_visible(False)
         fig.canvas.draw_idle()
 
     def kvartalvisning(event):
-        axGraph.set_visible(False)
+        axGraphManad.set_visible(False)
+        axGraphKvartal.set_visible(True)
         fig.canvas.draw_idle()
 
     axButnNedborManad = plt.axes((0.05, 0.9, 0.167, 0.05))
