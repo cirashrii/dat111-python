@@ -133,13 +133,13 @@ def plot1(event):
         AtPointM = poly.fit_transform(AtPoint)
         y_pred = model.predict(AtPointM)
         aarsnedbor = sum(y_pred)
-        axGraphManad.cla()
+        axGraphManed.cla()
         axGraphKvartal.cla()
         draw_the_map()
 
 
-        axMap.text(x, y, s=label_from_nedbor(aarsnedbor), color='white', fontsize=8, ha='left', va='center')
-        axGraphManad.set_title(f"Nedbør per måned, Årsnedbør {int(aarsnedbor)} mm")
+        axMap.text(x, y, s=label_from_nedbor(aarsnedbor), color='white', fontsize=8, ha='center', va='center')
+        axGraphManed.set_title(f"Nedbør per måned, Årsnedbør {int(aarsnedbor)} mm")
 
         doc = minidom.parse("cloud.svg")
         path_strings = [p.getAttribute('d') for p in doc.getElementsByTagName('path')]
@@ -151,82 +151,60 @@ def plot1(event):
         svg_path.vertices -= svg_path.vertices.mean(axis=0)
         svg_path.vertices += [-20,14]
 
-        # colorsPred = [color_from_nedbor(nedbor * 12) for nedbor in y_pred]
+        colorsPred = [color_from_nedbor(nedbor * 12) for nedbor in y_pred]
         axMap.scatter(x, y, c=color_from_nedbor(aarsnedbor), s=size_from_nedbor(aarsnedbor) * 2, marker=svg_path)
-        # axGraph.bar(months, y_pred, color=colorsPred)
+        axGraphManed.bar(months, y_pred, color=colorsPred)
 
-        if vis_modus == 'Måned':
-            colorsPred = [color_from_nedbor(n * 12) for n in y_pred]
-            axGraphManad.bar(months, y_pred, color=colorsPred)
-            draw_label_and_ticks_maned()
-            axGraphManad.set_title(f"Nedbør per måned, Årsnedbør {int(aarsnedbor)} mm")
-            gjennomsnitt = (aarsnedbor / 12)
-            txt = "Gjennomsnitt:{:.2f}mm"
-            axGraphManad.axhline(y=gjennomsnitt, xmin=0, xmax=1, color='#ea9d02', linestyle='-', linewidth=2, alpha=0.8)
-            axGraphManad.text(x=0.2, y=(aarsnedbor / 12) + 3, s=txt.format(gjennomsnitt), fontsize=10, color='#ea9d02',
-                         alpha=1,
-                         weight='bold')
+        gjennomsnittManed = (aarsnedbor / 12)
+        txt = "Gjennomsnitt:{:.2f}mm"
+        axGraphManed.axhline(y=gjennomsnittManed, xmin=0, xmax=1, color='#ea9d02', linestyle='-', linewidth=2, alpha=0.8)
+        axGraphManed.text(x=0.2, y=(aarsnedbor / 12) + 3, s=txt.format(gjennomsnittManed), fontsize=10, color='#ea9d02',
+                          alpha=1,
+                          weight='bold')
+        draw_label_and_ticks_maned()
 
-        else:
-            q_labels, q_values = month_to_quarter_data(y_pred)
-            colorsQ = [color_from_nedbor(n * 4) for n in q_values]
-            axGraphManad.bar(np.arange(1, 5), q_values, tick_label=q_labels, color=colorsQ)
-            axGraphManad.set_title(f"Nedbør per kvartal, Årsnedbør {int(aarsnedbor)} mm")
-            gjennomsnitt = (aarsnedbor / 4)
-            txt = "Gjennomsnitt:{:.2f}mm"
-            axGraphManad.axhline(y=gjennomsnitt, xmin=0, xmax=1, color='#ea9d02', linestyle='-', linewidth=2, alpha=0.8)
-            axGraphManad.text(x=0.2, y=(aarsnedbor / 4) + 3, s=txt.format(gjennomsnitt), fontsize=10, color='#ea9d02',
-                         alpha=1,
-                         weight='bold')
+        q_labels, q_values = month_to_quarter_data(y_pred)
+        colorsQ = [color_from_nedbor(n * 4) for n in q_values]
+        axGraphKvartal.bar(np.arange(1, 5), q_values, tick_label=q_labels, color=colorsQ)
+        axGraphKvartal.set_title(f"Nedbør per kvartal, Årsnedbør {int(aarsnedbor)} mm")
+        gjennomsnittKvartal = (aarsnedbor / 4)
+        txt = "Gjennomsnitt:{:.2f}mm"
+        axGraphKvartal.axhline(y=gjennomsnittKvartal, xmin=0, xmax=1, color='#ea9d02', linestyle='-', linewidth=2, alpha=0.8)
+        axGraphKvartal.text(x=0.45, y=(aarsnedbor / 4) + 5, s=txt.format(gjennomsnittKvartal), fontsize=10, color='#ea9d02',
+                     alpha=1,
+                     weight='bold')
 
         plt.draw()
         legg_til_fargeforklaring(axMap)
 
     def draw_label_and_ticks_maned():
         xlabels = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
-        axGraphManad.set_xticks(np.linspace(1, 12, 12))
-        axGraphManad.set_xticklabels(xlabels)
+        axGraphManed.set_xticks(np.linspace(1, 12, 12))
+        axGraphManed.set_xticklabels(xlabels)
 
     # Create the figures
     fig = plt.figure(figsize=(10, 6))
-    axGraphManad = fig.add_axes((0.05, 0.17, 0.35, 0.67))
+    axGraphManed = fig.add_axes((0.05, 0.17, 0.35, 0.67))
     axGraphKvartal = fig.add_axes((0.05, 0.17, 0.35, 0.67))
     axGraphKvartal.set_visible(False)
     axMap = fig.add_axes((0.41, 0.17, 0.59, 0.67))
     draw_label_and_ticks_maned()
     img = mpimg.imread('StorBergen2.png')
     axMap.set_title("Årsnedbør Stor Bergen")
-    axGraphManad.set_title("Per måned")
+    axGraphManed.set_title("Per måned")
+    axGraphKvartal.set_title("Per kvartal")
     axMap.axis('off')
 
     fig.subplots_adjust(left=0, right=1, top=1, bottom=0) # Adjust the figure to fit the image
     axMap.margins(x=0.01, y=0.01)  # Adjust x and y margins
 
-    axRadio = fig.add_axes((0.01, 0.94, 0.08, 0.06))
-    radio = RadioButtons(axRadio, ('Måned', 'Kvartal'))
-
-    def on_radio_change(label):
-        global vis_modus
-        vis_modus = label
-        if marked_point != (0,0):
-            class DummyEvent:
-                def __init__(self, x, y):
-                    self.xdata = x
-                    self.ydata = y
-                    self.inaxes = axMap
-            on_click(DummyEvent(*marked_point))
-        else:
-            draw_the_map()
-            plt.draw()
-    radio.on_clicked(on_radio_change)
-
     def manadsvisning(event):
-        axGraphManad.set_visible(True)
+        axGraphManed.set_visible(True)
         axGraphKvartal.set_visible(False)
         fig.canvas.draw_idle()
 
     def kvartalvisning(event):
-        axGraphManad.set_visible(False)
+        axGraphManed.set_visible(False)
         axGraphKvartal.set_visible(True)
         fig.canvas.draw_idle()
 
