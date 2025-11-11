@@ -21,7 +21,6 @@ import matplotlib.transforms as mtransforms
 from matplotlib.widgets import Button
 from matplotlib.widgets import RadioButtons
 from matplotlib.patches import Patch
-vis_modus = 'Måned'
 
 display(SVG(filename='cloud.svg'))
 
