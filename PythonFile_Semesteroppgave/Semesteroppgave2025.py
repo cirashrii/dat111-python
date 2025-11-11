@@ -137,7 +137,7 @@ def plot1(event):
         draw_the_map()
 
 
-        axMap.text(x, y, s=label_from_nedbor(aarsnedbor), color='white', fontsize=8, ha='center', va='center')
+        axMap.text(x, y, s=label_from_nedbor(aarsnedbor), color='white', fontsize=8, ha='left', va='center')
         axGraph.set_title(f"Nedbør per måned, Årsnedbør {int(aarsnedbor)} mm")
 
         doc = minidom.parse("cloud.svg")
@@ -157,7 +157,7 @@ def plot1(event):
         if vis_modus == 'Måned':
             colorsPred = [color_from_nedbor(n * 12) for n in y_pred]
             axGraph.bar(months, y_pred, color=colorsPred)
-            draw_label_and_ticks()
+            draw_label_and_ticks_maned()
             axGraph.set_title(f"Nedbør per måned, Årsnedbør {int(aarsnedbor)} mm")
             gjennomsnitt = (aarsnedbor / 12)
             txt = "Gjennomsnitt:{:.2f}mm"
@@ -181,16 +181,16 @@ def plot1(event):
         plt.draw()
         legg_til_fargeforklaring(axMap)
 
-    def draw_label_and_ticks():
+    def draw_label_and_ticks_maned():
         xlabels = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
         axGraph.set_xticks(np.linspace(1, 12, 12))
         axGraph.set_xticklabels(xlabels)
 
     # Create the figures
-    fig = plt.figure(figsize=(10, 4))
-    axGraph = fig.add_axes((0.05, 0.07, 0.35, 0.85))
-    axMap = fig.add_axes((0.41, 0.07, 0.59, 0.85))
-    draw_label_and_ticks()
+    fig = plt.figure(figsize=(10, 6))
+    axGraph = fig.add_axes((0.05, 0.17, 0.35, 0.67))
+    axMap = fig.add_axes((0.41, 0.17, 0.59, 0.67))
+    draw_label_and_ticks_maned()
     img = mpimg.imread('StorBergen2.png')
     axMap.set_title("Årsnedbør Stor Bergen")
     axGraph.set_title("Per måned")
@@ -216,6 +216,22 @@ def plot1(event):
             draw_the_map()
             plt.draw()
     radio.on_clicked(on_radio_change)
+
+    def manadsvisning(event):
+        axGraph.set_visible(True)
+        fig.canvas.draw_idle()
+
+    def kvartalvisning(event):
+        axGraph.set_visible(False)
+        fig.canvas.draw_idle()
+
+    axButnNedborManad = plt.axes((0.05, 0.9, 0.167, 0.05))
+    btn_nedbor_manad = Button(axButnNedborManad, label="Månedsvisning", color='lightblue', hovercolor='tomato')
+    btn_nedbor_manad.on_clicked(manadsvisning)
+
+    axButnNedborKvartal = plt.axes((0.233, 0.9, 0.167, 0.05))
+    btn_nedbor_kvartal = Button(axButnNedborKvartal, label="Kvartalvisning", color='lightblue', hovercolor='tomato')
+    btn_nedbor_kvartal.on_clicked(kvartalvisning)
 
     # Read rain data, and split in train and test.py data
     df = pd.read_csv('NedborX.csv')
@@ -247,7 +263,7 @@ def plot1(event):
     plt.show()
 
 
-Button
+#Button
 axButn1 = plt.axes((0.1, 0.2, 0.3, 0.15))
 btn1 = Button(    axButn1, label="Nedbør", color='lightblue', hovercolor='tomato')
 btn1.label.set_fontsize(14)
