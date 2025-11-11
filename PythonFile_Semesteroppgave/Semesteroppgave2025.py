@@ -101,24 +101,6 @@ def draw_the_map_temperatur():
         axMapTemperatur.text(xr[i], yr[i], s=labels[i], color='black', fontsize=8, ha='center', va='center')
     axMapTemperatur.set_title(f"Gjennomsnittstemperatur Stor Bergen")
 
-def index_from_temperatur(x):
-    if x < 10: return 0
-    if x < 15: return 1
-    if x < 20: return 2
-    if x < 40: return 3
-    return 4
-
-
-def color_from_temperatur(temperatur):
-    return tempColors[index_from_temperatur(temperatur)]
-
-
-def size_from_temperatur(temperatur):
-    return 350
-
-
-def label_from_temperatur(temperatur):
-    return str(int(temperatur))
 
 def index_from_nedbor(x):
     if x < 1300: return 0
@@ -158,7 +140,7 @@ def on_click_nedbor(event) :
     AtPoint = np.vstack(vectors)
     # fitting the model, and predict for each month
     AtPointM = poly.fit_transform(AtPoint)
-    y_pred = model.predict(AtPointM)
+    y_pred = n_model.predict(AtPointM)
     aarsnedbor = sum(y_pred)
     axGraphManed.cla()
     axGraphKvartal.cla()
@@ -218,7 +200,7 @@ def on_click_temp(event):
     AtPoint = np.vstack(vectors)
     # fitting the model, and predict for each month
     AtPointM = poly.fit_transform(AtPoint)
-    y_pred = model.predict(AtPointM)
+    y_pred = t_model.predict(AtPointM)
     aarstemperatur = sum(y_pred)/12
     axGraphManedTemp.cla()
     draw_the_map_temperatur()
@@ -241,6 +223,25 @@ def on_click_temp(event):
     axGraphManedTemp.bar(months, y_pred, color=colorsPred)
     draw_label_and_ticks_maned()
     plt.draw()
+
+def index_from_temperatur(x):
+    if x < 10: return 0
+    if x < 15: return 1
+    if x < 20: return 2
+    if x < 40: return 3
+    return 4
+
+
+def color_from_temperatur(temperatur):
+    return tempColors[index_from_temperatur(temperatur)]
+
+
+def size_from_temperatur(temperatur):
+    return 350
+
+
+def label_from_temperatur(temperatur):
+    return str(int(temperatur))
 
 
 def draw_label_and_ticks_maned():
@@ -288,32 +289,43 @@ def kvartalvisning(event):
     fig.canvas.draw_idle()
 
 # Read rain data, and split in train and test.py data
-df_n = pd.read_csv('NedborX.csv')
 marked_point = (0,0)
-ns = df_n['Nedbor']
-X = df_n.drop('Nedbor',  axis=1)
-poly = PolynomialFeatures(degree=3)
-X_poly = poly.fit_transform(X)
-X_train, X_test, Y_train, Y_test = train_test_split(
-    X_poly, ns, test_size=0.25)
 
+df_n = pd.read_csv('NedborX.csv')
 df_t = pd.read_csv('TemperaturX.csv')
-ns = df_t['Temperatur']
-X = df_t.drop('Temperatur', axis=1)
+
+ns_n = df_n['Nedbor']
+X_n = df_n.drop('Nedbor',  axis=1)
+
 poly = PolynomialFeatures(degree=3)
-X_poly = poly.fit_transform(X)
-X_train, X_test, Y_train, Y_test = train_test_split(
-    X_poly, ns, test_size=0.25)
+X_n_poly = poly.fit_transform(X_n)
+X_n_train, X_n_test, Y_n_train, Y_n_test = train_test_split(
+    X_n_poly, ns_n, test_size=0.25)
+
+ns_t = df_t['Temperatur']
+X_t = df_t.drop('Temperatur', axis=1)
+
+X_t_poly = poly.fit_transform(X_t)
+X_t_train, X_t_test, Y_t_train, Y_t_test = train_test_split(
+    X_t_poly, ns_t, test_size=0.25)
 
 # creating a regression model
-model = LinearRegression()
-model.fit(X_train, Y_train) # fitting the model
-Y_pred = model.predict(X_test)
+n_model = LinearRegression()
+n_model.fit(X_n_train, Y_n_train) # fitting the model
+Y_n_pred = n_model.predict(X_n_test)
 
 # Check model quality
-r_squared = r2_score(Y_test, Y_pred)
-print(f"R-squared: {r_squared:.2f}")
-print('mean_absolute_error (mnd) : ', mean_absolute_error(Y_test, Y_pred))
+r_squared_n = r2_score(Y_n_test, Y_n_pred)
+print(f"R-squared: {r_squared_n:.2f}")
+print('mean_absolute_error (mnd) : ', mean_absolute_error(Y_n_test, Y_n_pred))
+
+t_model = LinearRegression()
+t_model.fit(X_t_train, Y_t_train) # fitting the model
+Y_t_pred = t_model.predict(X_t_test)
+
+r_squared_t = r2_score(Y_t_test, Y_t_pred)
+print(f"R-squared: {r_squared_t:.2f}")
+print('mean_absolute_error (mnd) : ', mean_absolute_error(Y_t_test, Y_t_pred))
 
 nedborColors = [ '#5dbcc6', '#458e96', '#356c72', '#23484c', '#172d30']
 tempColors = [ '#fcf341', '#f9c32c', '#ef7e04', '#d14545', '#560505']
