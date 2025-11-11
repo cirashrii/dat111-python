@@ -224,15 +224,15 @@ def on_click_temp(event):
     axGraphManedTemp.bar(months, y_pred, color=colorsPred)
     draw_label_and_ticks_maned()
 
-    q_labels, q_values = month_to_quarter_data(y_pred)
+    q_labels, q_values = month_to_quarter_data(y_pred/3)
     colorsQ = [color_from_temperatur(t) for t in q_values]
     axGraphKvartalTemp.bar(np.arange(1, 5), q_values, tick_label=q_labels, color=colorsQ)
     axGraphKvartalTemp.set_title(f"Temperatur per kvartal, ÅrsTemperatur {int(aarstemperatur)} C")
     gjennomsnittKvartal = (aarstemperatur)
     txt = "Gjennomsnitt:{:.2f}C"
-    axGraphKvartalTemp.axhline(y=gjennomsnittKvartal, xmin=0, xmax=1, color='#ea9d02', linestyle='-', linewidth=2,
+    axGraphKvartalTemp.axhline(y=gjennomsnittKvartal, xmin=0, xmax=1, color='#b70707', linestyle='-', linewidth=2,
                            alpha=0.8)
-    axGraphKvartalTemp.text(x=0.45, y=(aarstemperatur) + 5, s=txt.format(gjennomsnittKvartal), fontsize=10, color='#ea9d02',
+    axGraphKvartalTemp.text(x=0.45, y=(aarstemperatur) + 0.25, s=txt.format(gjennomsnittKvartal), fontsize=10, color='#b70707',
                         alpha=1,
                         weight='bold')
 
@@ -420,7 +420,7 @@ btn2 = Button( axButn2, label="Temperatur", color='orange', hovercolor='tomato')
 btn2.on_clicked(temperatur_show)
 
 axButnTemperaturManad = plt.axes((0.05, 0.9, 0.167, 0.05))
-btn_temperatur_manad = Button(axButnTemperaturManad, label="Manadsvisning", color='lightblue', hovercolor='tomato')
+btn_temperatur_manad = Button(axButnTemperaturManad, label="Månedsvisning", color='lightblue', hovercolor='tomato')
 btn_temperatur_manad.on_clicked(manadsvisningTemp)
 axButnTemperaturManad.set_visible(False)
 
