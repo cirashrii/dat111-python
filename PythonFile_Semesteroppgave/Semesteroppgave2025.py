@@ -208,7 +208,7 @@ def on_click_temp(event):
 
 
     axMapTemperatur.text(x, y, s=label_from_temperatur(aarstemperatur), color='black', fontsize=8, ha='center', va='center')
-    axGraphManedTemp.set_title(f"Temperatur per måned, Årstemperatur {int(aarstemperatur)}")
+    axGraphManedTemp.set_title(f"Temperatur per måned, Gjennomsnitt {int(aarstemperatur)} C")
 
     gjennomsnitt = (aarstemperatur)
     txt = "Gjennomsnitt:{:.2f}C"
@@ -227,7 +227,7 @@ def on_click_temp(event):
     q_labels, q_values = month_to_quarter_data(y_pred/3)
     colorsQ = [color_from_temperatur(t) for t in q_values]
     axGraphKvartalTemp.bar(np.arange(1, 5), q_values, tick_label=q_labels, color=colorsQ)
-    axGraphKvartalTemp.set_title(f"Temperatur per kvartal, ÅrsTemperatur {int(aarstemperatur)} C")
+    axGraphKvartalTemp.set_title(f"Temperatur per kvartal, Gjennomsnitt {int(aarstemperatur)} C")
     gjennomsnittKvartal = (aarstemperatur)
     txt = "Gjennomsnitt:{:.2f}C"
     axGraphKvartalTemp.axhline(y=gjennomsnittKvartal, xmin=0, xmax=1, color='#b70707', linestyle='-', linewidth=2,
