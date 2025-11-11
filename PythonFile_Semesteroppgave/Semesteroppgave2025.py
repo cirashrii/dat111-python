@@ -84,7 +84,7 @@ def draw_the_map_nedbor():
 def draw_the_map_temperatur():
     # Accumulate all months to year
     axMapTemperatur.cla()
-    axMapNedbor.imshow(img, extent=(0, 13, 0, 10))
+    axMapTemperatur.imshow(img, extent=(0, 13, 0, 10))
 
 
     df_year = df_t.groupby(['X', 'Y']).agg({'Temperatur': 'sum'}).reset_index()
