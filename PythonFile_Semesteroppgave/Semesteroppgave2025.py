@@ -113,7 +113,7 @@ def plot1(event):
             np.sum(y_pred[6:9]),
             np.sum(y_pred[9:12])
         ]
-        labels = ['K1', 'K2', 'K3', 'K4']
+        labels = ['Jan-Mar', 'Apr-Jun', 'Jul-Sep', 'Okt-Des']
         return labels, q_values
 
     def on_click(event) :
@@ -178,7 +178,7 @@ def plot1(event):
                          alpha=1,
                          weight='bold')
 
-        plt.show()
+        plt.draw()
         legg_til_fargeforklaring(axMap)
 
     def draw_label_and_ticks():
