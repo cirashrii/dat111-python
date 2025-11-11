@@ -407,7 +407,6 @@ def nedbor_show(event):
     axMapTemperatur.set_visible(False)
     axGraphManed.set_visible(True)
     axGraphManedTemp.set_visible(False)
-    print("Nedbør skal vises!")
     axButnKvartalTemp.set_visible(False)
     axButnTemperaturManad.set_visible(False)
     axButnNedborKvartal.set_visible(True)
