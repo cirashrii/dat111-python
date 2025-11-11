@@ -284,32 +284,35 @@ axMapNedbor.set_title("Årsnedbør Stor Bergen")
 axGraphManed.set_title("Per måned")
 axGraphKvartal.set_title("Per kvartal")
 axMapNedbor.axis('off')
+
 axMapTemperatur.set_title("Årstemperatur Stor Bergen")
 axGraphManedTemp.set_title("Per måned")
-axMapTemperatur.axis('off')
 axGraphKvartalTemp.set_title("Per kvartal")
+axMapTemperatur.axis('off')
 
 
 fig.subplots_adjust(left=0, right=1, top=1, bottom=0) # Adjust the figure to fit the image
 axMapNedbor.margins(x=0.01, y=0.01)  # Adjust x and y margins
 
-nedbørsvisning = True
+
 def manadsvisning(event):
-    if nedbørsvisning is True:
-        axGraphManed.set_visible(True)
-        axGraphKvartal.set_visible(False)
-    else:
-        axGraphManedTemp.set_visible(True)
-        axGraphKvartalTemp.set_visible(False)
+    axGraphManed.set_visible(True)
+    axGraphKvartal.set_visible(False)
     fig.canvas.draw_idle()
 
 def kvartalvisning(event):
-    if nedbørsvisning is True:
-        axGraphManed.set_visible(False)
-        axGraphKvartal.set_visible(True)
-    else:
-        axGraphManedTemp.set_visible(False)
-        axGraphKvartalTemp.set_visible(True)
+    axGraphManed.set_visible(False)
+    axGraphKvartal.set_visible(True)
+    fig.canvas.draw_idle()
+
+def manadsvisningTemp(event):
+    axGraphManedTemp.set_visible(True)
+    axGraphKvartalTemp.set_visible(False)
+    fig.canvas.draw_idle()
+
+def kvartalvisningTemp(event):
+    axGraphManedTemp.set_visible(False)
+    axGraphKvartalTemp.set_visible(True)
     fig.canvas.draw_idle()
 
 # Read rain data, and split in train and test.py data
@@ -361,24 +364,41 @@ plt.connect('button_press_event', on_click_nedbor)
 plt.connect('button_press_event', on_click_temp)
 
 def nedbor_show(event):
-    nedbørsvisning = True
     axGraphKvartalTemp.set_visible(False)
     axMapNedbor.set_visible(True)
     axMapTemperatur.set_visible(False)
     axGraphManed.set_visible(True)
     axGraphManedTemp.set_visible(False)
     print("Nedbør skal vises!")
+    axButnKvartalTemp.set_visible(False)
+    axButnTemperaturManad.set_visible(False)
+    axButnNedborKvartal.set_visible(True)
+    axButnNedborManad.set_visible(True)
+
+    btn_temperatur_manad.set_active(False)
+    btn_temperatur_kvartal.set_active(False)
+    btn_nedbor_manad.set_active(True)
+    btn_nedbor_kvartal.set_active(True)
+
     fig.canvas.draw_idle()
 
 
 def temperatur_show(event):
-    nedbørsvisning = False
     axGraphKvartal.set_visible(False)
     axMapNedbor.set_visible(False)
     axMapTemperatur.set_visible(True)
     axGraphManed.set_visible(False)
     axGraphManedTemp.set_visible(True)
-    print("Nedbør skal ikke vises. :(")
+    axButnNedborKvartal.set_visible(False)
+    axButnNedborManad.set_visible(False)
+    axButnKvartalTemp.set_visible(True)
+    axButnTemperaturManad.set_visible(True)
+
+    btn_temperatur_manad.set_active(True)
+    btn_temperatur_kvartal.set_active(True)
+    btn_nedbor_manad.set_active(False)
+    btn_nedbor_kvartal.set_active(False)
+
     fig.canvas.draw_idle()
 
 
@@ -399,12 +419,15 @@ btn2 = Button( axButn2, label="Temperatur", color='orange', hovercolor='tomato')
 btn2.on_clicked(temperatur_show)
 
 axButnTemperaturManad = plt.axes((0.05, 0.9, 0.167, 0.05))
-btn_temperatur_manad = Button(axButnNedborManad, label="Månedsvisning", color='lightblue', hovercolor='tomato')
+btn_temperatur_manad = Button(axButnTemperaturManad, label="Manadsvisning", color='lightblue', hovercolor='tomato')
 btn_temperatur_manad.on_clicked(manadsvisning)
+axButnTemperaturManad.set_visible(False)
 
-axButnNedborKvartal = plt.axes((0.233, 0.9, 0.167, 0.05))
-btn_nedbor_kvartal = Button(axButnNedborKvartal, label="Kvartalvisning", color='lightblue', hovercolor='tomato')
-btn_nedbor_kvartal.on_clicked(kvartalvisning)
+axButnKvartalTemp = plt.axes((0.233, 0.9, 0.167, 0.05))
+btn_temperatur_kvartal = Button(axButnKvartalTemp, label="Kvartalvisning", color='lightblue', hovercolor='tomato')
+btn_temperatur_kvartal.on_clicked(kvartalvisning)
+axButnKvartalTemp.set_visible(False)
+
 
 
 
