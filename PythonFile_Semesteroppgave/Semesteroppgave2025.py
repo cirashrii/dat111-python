@@ -55,6 +55,41 @@ def legg_til_fargeforklaring(ax):
         pass
     return leg
 
+
+
+
+def legg_til_fargeforklaringTemp(ax):
+    terskler = [10, 15, 20, 40]
+    labels = [
+        f"<{terskler[0]} C",
+        f"{terskler[0]}-{terskler[1]-1} C",
+        f"{terskler[1]}-{terskler[2]-1} C",
+        f"{terskler[2]}-{terskler[3]-1}C",
+        f"≥ {terskler[3]}C",
+    ]
+
+    handles = [Patch(facecolor=c, edgecolor="black", linewidth=0.5) for c in tempColors]
+
+    leg = ax.legend(
+        handles,
+        labels,
+        title="Temperatur (fargekode)",
+        loc="lower left",
+        frameon=True,
+        borderpad=0.6,
+        labelspacing=0.5,
+        handlelength=1.6,
+        handletextpad=0.6,
+    )
+
+    try:
+        leg._legend_box.align ="left"
+    except Exception:
+        pass
+    return leg
+
+
+
 def draw_the_map_nedbor():
     # Accumulate all months to year
     axMapNedbor.cla()
@@ -100,6 +135,8 @@ def draw_the_map_temperatur():
     for i, y in enumerate(xr):
         axMapTemperatur.text(xr[i], yr[i], s=labels[i], color='black', fontsize=8, ha='center', va='center')
     axMapTemperatur.set_title(f"Gjennomsnittstemperatur Stor Bergen")
+
+    legg_til_fargeforklaringTemp(axMapTemperatur)
 
 
 def index_from_nedbor(x):
@@ -235,7 +272,7 @@ def on_click_temp(event):
     axGraphKvartalTemp.text(x=0.45, y=(aarstemperatur) + 0.25, s=txt.format(gjennomsnittKvartal), fontsize=10, color='#b70707',
                         alpha=1,
                         weight='bold')
-
+    legg_til_fargeforklaringTemp(axMapTemperatur)
     plt.draw()
 
 def index_from_temperatur(x):
