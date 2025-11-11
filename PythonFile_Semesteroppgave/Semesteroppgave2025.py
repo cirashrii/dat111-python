@@ -35,7 +35,7 @@ def legg_til_fargeforklaring(ax):
         f"≥ {terskler[3]}mm",
     ]
 
-    handles = [Patch(facecolor=c, edgecolor="black", linewidth=0.5) for c in colors]
+    handles = [Patch(facecolor=c, edgecolor="black", linewidth=0.5) for c in nedborColors]
 
     leg = ax.legend(
         handles,
@@ -55,10 +55,9 @@ def legg_til_fargeforklaring(ax):
         pass
     return leg
 
-def draw_the_map():
+def draw_the_map_nedbor():
     # Accumulate all months to year
     axMapNedbor.cla()
-    axMapTemperatur.cla()
     axMapNedbor.imshow(img, extent=(0, 13, 0, 10))
 
     doc = minidom.parse("cloud.svg")
@@ -70,7 +69,7 @@ def draw_the_map():
     svg_path.vertices -= svg_path.vertices.mean(axis=0)
     svg_path.vertices += [-20, 14]
 
-    df_year = df.groupby(['X', 'Y']).agg({'Nedbor': 'sum'}).reset_index()
+    df_year = df_n.groupby(['X', 'Y']).agg({'Nedbor': 'sum'}).reset_index()
     xr = df_year['X'].tolist()
     yr = df_year['Y'].tolist()
     nedborAar = df_year['Nedbor']
@@ -82,6 +81,45 @@ def draw_the_map():
     axMapNedbor.set_title(f"Årsnedbør Stor Bergen")
     legg_til_fargeforklaring(axMapNedbor)
 
+def draw_the_map_temperatur():
+    # Accumulate all months to year
+    axMapTemperatur.cla()
+    axMapNedbor.imshow(img, extent=(0, 13, 0, 10))
+
+
+    df_year = df_t.groupby(['X', 'Y']).agg({'Temperatur': 'sum'}).reset_index()
+    xr = df_year['X'].tolist()
+    yr = df_year['Y'].tolist()
+    TemperaturAar = df_year['Temperatur']
+    ColorList = [color_from_temperatur(t) for t in TemperaturAar/12]
+
+
+
+    axMapTemperatur.scatter(xr, yr, c=ColorList, s=size_from_temperatur(TemperaturAar / 12) * 1, marker='o')
+    labels = [label_from_temperatur(t) for t in TemperaturAar/12]
+    for i, y in enumerate(xr):
+        axMapTemperatur.text(xr[i], yr[i], s=labels[i], color='black', fontsize=8, ha='center', va='center')
+    axMapTemperatur.set_title(f"Gjennomsnittstemperatur Stor Bergen")
+
+def index_from_temperatur(x):
+    if x < 10: return 0
+    if x < 15: return 1
+    if x < 20: return 2
+    if x < 40: return 3
+    return 4
+
+
+def color_from_temperatur(temperatur):
+    return tempColors[index_from_temperatur(temperatur)]
+
+
+def size_from_temperatur(temperatur):
+    return 350
+
+
+def label_from_temperatur(temperatur):
+    return str(int(temperatur))
+
 def index_from_nedbor(x):
     if x < 1300: return 0
     if x < 1700: return 1
@@ -90,7 +128,7 @@ def index_from_nedbor(x):
     return 4
 
 def color_from_nedbor(nedbor):
-    return colors[index_from_nedbor(nedbor)]
+    return nedborColors[index_from_nedbor(nedbor)]
 def size_from_nedbor(nedbor):
     return 350
 def label_from_nedbor(nedbor):
@@ -105,7 +143,7 @@ def month_to_quarter_data(y_pred):
     labels = ['Jan-Mar', 'Apr-Jun', 'Jul-Sep', 'Okt-Des']
     return labels, q_values
 
-def on_click(event) :
+def on_click_nedbor(event) :
     global marked_point
     if event.inaxes != axMapNedbor:
         return
@@ -124,7 +162,7 @@ def on_click(event) :
     aarsnedbor = sum(y_pred)
     axGraphManed.cla()
     axGraphKvartal.cla()
-    draw_the_map()
+    draw_the_map_nedbor()
 
 
     axMapNedbor.text(x, y, s=label_from_nedbor(aarsnedbor), color='white', fontsize=8, ha='center', va='center')
@@ -165,10 +203,52 @@ def on_click(event) :
     plt.draw()
     legg_til_fargeforklaring(axMapNedbor)
 
+def on_click_temp(event):
+    global marked_point
+    if event.inaxes != axMapTemperatur:
+        return
+
+    marked_point = (event.xdata, event.ydata)
+    x, y = marked_point
+
+    vectors = []
+    months = np.linspace(1, 12, 12)
+    for mnd in months:
+        vectors.append([x, y, mnd])
+    AtPoint = np.vstack(vectors)
+    # fitting the model, and predict for each month
+    AtPointM = poly.fit_transform(AtPoint)
+    y_pred = model.predict(AtPointM)
+    aarstemperatur = sum(y_pred)/12
+    axGraphManedTemp.cla()
+    draw_the_map_temperatur()
+
+
+    axMapTemperatur.text(x, y, s=label_from_temperatur(aarstemperatur), color='black', fontsize=8, ha='center', va='center')
+    axGraphManedTemp.set_title(f"Temperatur per måned, Årstemperatur {int(aarstemperatur)}")
+
+    gjennomsnitt = (aarstemperatur)
+    txt = "Gjennomsnitt:{:.2f}C"
+    axGraphManedTemp.axhline(y=gjennomsnitt, xmin=0, xmax=1, color='#b70707', linestyle='-', linewidth=2, alpha=0.8)
+    axGraphManedTemp.text(x=0.2, y=(aarstemperatur)+0.5, s=txt.format(gjennomsnitt), fontsize=10, color='#b70707', alpha=1,
+                 weight='bold')
+
+
+
+    colorsPred = [color_from_temperatur(temperatur) for temperatur in y_pred]
+
+    axMapTemperatur.scatter(x, y, c=color_from_temperatur(aarstemperatur), s=size_from_temperatur(aarstemperatur) * 1.25, marker='o')
+    axGraphManedTemp.bar(months, y_pred, color=colorsPred)
+    draw_label_and_ticks_maned()
+    plt.draw()
+
+
 def draw_label_and_ticks_maned():
     xlabels = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
     axGraphManed.set_xticks(np.linspace(1, 12, 12))
     axGraphManed.set_xticklabels(xlabels)
+    axGraphManedTemp.set_xticks(np.linspace(1, 12, 12))
+    axGraphManedTemp.set_xticklabels(xlabels)
 
 # Create the figures
 fig = plt.figure(figsize=(10, 6))
@@ -176,14 +256,21 @@ axGraphManed = fig.add_axes((0.05, 0.17, 0.35, 0.67))
 axGraphKvartal = fig.add_axes((0.05, 0.17, 0.35, 0.67))
 axGraphKvartal.set_visible(False)
 axMapNedbor = fig.add_axes((0.41, 0.17, 0.59, 0.67))
+
+axGraphManedTemp = fig.add_axes((0.05, 0.17, 0.35, 0.67))
+axGraphManedTemp.set_visible(False)
 axMapTemperatur = fig.add_axes((0.41, 0.17, 0.59, 0.67))
 axMapTemperatur.set_visible(False)
+
 draw_label_and_ticks_maned()
 img = mpimg.imread('StorBergen2.png')
 axMapNedbor.set_title("Årsnedbør Stor Bergen")
 axGraphManed.set_title("Per måned")
 axGraphKvartal.set_title("Per kvartal")
 axMapNedbor.axis('off')
+axMapTemperatur.set_title("Årstemperatur Stor Bergen")
+axGraphManedTemp.set_title("Per måned")
+axMapTemperatur.axis('off')
 
 fig.subplots_adjust(left=0, right=1, top=1, bottom=0) # Adjust the figure to fit the image
 axMapNedbor.margins(x=0.01, y=0.01)  # Adjust x and y margins
@@ -201,16 +288,22 @@ def kvartalvisning(event):
     fig.canvas.draw_idle()
 
 # Read rain data, and split in train and test.py data
-df = pd.read_csv('NedborX.csv')
+df_n = pd.read_csv('NedborX.csv')
 marked_point = (0,0)
-ns = df['Nedbor']
-X = df.drop('Nedbor',  axis=1)
+ns = df_n['Nedbor']
+X = df_n.drop('Nedbor',  axis=1)
 poly = PolynomialFeatures(degree=3)
 X_poly = poly.fit_transform(X)
 X_train, X_test, Y_train, Y_test = train_test_split(
     X_poly, ns, test_size=0.25)
 
-
+df_t = pd.read_csv('TemperaturX.csv')
+ns = df_t['Temperatur']
+X = df_t.drop('Temperatur', axis=1)
+poly = PolynomialFeatures(degree=3)
+X_poly = poly.fit_transform(X)
+X_train, X_test, Y_train, Y_test = train_test_split(
+    X_poly, ns, test_size=0.25)
 
 # creating a regression model
 model = LinearRegression()
@@ -222,138 +315,20 @@ r_squared = r2_score(Y_test, Y_pred)
 print(f"R-squared: {r_squared:.2f}")
 print('mean_absolute_error (mnd) : ', mean_absolute_error(Y_test, Y_pred))
 
-colors = [ '#5dbcc6', '#458e96', '#356c72', '#23484c', '#172d30']
-draw_the_map()
+nedborColors = [ '#5dbcc6', '#458e96', '#356c72', '#23484c', '#172d30']
+tempColors = [ '#fcf341', '#f9c32c', '#ef7e04', '#d14545', '#560505']
+draw_the_map_nedbor()
+draw_the_map_temperatur()
 
 
-plt.connect('button_press_event', on_click)
-
-
-def plot2(event):
-    # Read temp data, and split in train and test.py data
-    df = pd.read_csv('TemperaturX.csv')
-    marked_point = (0,0)
-    ns = df['Temperatur']
-    X = df.drop('Temperatur',  axis=1)
-    poly = PolynomialFeatures(degree=3)
-    X_poly = poly.fit_transform(X)
-    X_train, X_test, Y_train, Y_test = train_test_split(
-        X_poly, ns, test_size=0.25)
-
-    # creating a regression model
-    model = LinearRegression()
-    model.fit(X_train, Y_train) # fitting the model
-    Y_pred = model.predict(X_test)
-
-    def draw_the_map():
-        # Accumulate all months to year
-        axMapTemperatur.cla()
-        plt.imshow(img, extent=(0, 13, 0, 10))
-
-        df_year = df.groupby(['X', 'Y']).agg({'Temperatur': 'sum'}).reset_index()
-        xr = df_year['X'].tolist()
-        yr = df_year['Y'].tolist()
-        TemperaturAar = df_year['Temperatur']
-        ColorList = [color_from_temperatur(t) for t in TemperaturAar/12]
-
-
-
-        axMapTemperatur.scatter(xr, yr, c=ColorList, s=size_from_temperatur(TemperaturAar / 12) * 1, marker='o')
-        labels = [label_from_temperatur(t) for t in TemperaturAar/12]
-        for i, y in enumerate(xr):
-            axMapTemperatur.text(xr[i], yr[i], s=labels[i], color='black', fontsize=8, ha='center', va='center')
-        axMapTemperatur.set_title(f"Gjennomsnittstemperatur Stor Bergen")
-
-    def index_from_temperatur(x):
-        if x < 10: return 0
-        if x < 15: return 1
-        if x < 20: return 2
-        if x < 40: return 3
-        return 4
-
-
-    def color_from_temperatur(temperatur):
-        return tempColors[index_from_temperatur(temperatur)]
-
-
-    def size_from_temperatur(temperatur):
-        return 350
-
-
-    def label_from_temperatur(temperatur):
-        return str(int(temperatur))
-
-
-    def on_click(event):
-        global marked_point
-        if event.inaxes != axMapTemperatur:
-            return
-
-        marked_point = (event.xdata, event.ydata)
-        x, y = marked_point
-
-        vectors = []
-        months = np.linspace(1, 12, 12)
-        for mnd in months:
-            vectors.append([x, y, mnd])
-        AtPoint = np.vstack(vectors)
-        # fitting the model, and predict for each month
-        AtPointM = poly.fit_transform(AtPoint)
-        y_pred = model.predict(AtPointM)
-        aarstemperatur = sum(y_pred)/12
-        axGraph.cla()
-        draw_the_map()
-
-
-        axMapTemperatur.text(x, y, s=label_from_temperatur(aarstemperatur), color='black', fontsize=8, ha='center', va='center')
-        axGraph.set_title(f"Temperatur per måned, Årstemperatur {int(aarstemperatur)}")
-
-        gjennomsnitt = (aarstemperatur)
-        txt = "Gjennomsnitt:{:.2f}C"
-        axGraph.axhline(y=gjennomsnitt, xmin=0, xmax=1, color='#b70707', linestyle='-', linewidth=2, alpha=0.8)
-        axGraph.text(x=0.2, y=(aarstemperatur)+0.5, s=txt.format(gjennomsnitt), fontsize=10, color='#b70707', alpha=1,
-                     weight='bold')
-
-
-
-        colorsPred = [color_from_temperatur(temperatur) for temperatur in y_pred]
-
-        axMapTemperatur.scatter(x, y, c=color_from_temperatur(aarstemperatur), s=size_from_temperatur(aarstemperatur) * 1.25, marker='o')
-        axGraph.bar(months, y_pred, color=colorsPred)
-        draw_label_and_ticks()
-        plt.draw()
-
-
-
-    def draw_label_and_ticks():
-        xlabels = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
-        axGraph.set_xticks(np.linspace(1, 12, 12))
-        axGraph.set_xticklabels(xlabels)
-
-
-    # Create the figures
-    fig = plt.figure(figsize=(10, 4))
-    axGraph = fig.add_axes((0.05, 0.07, 0.35, 0.85))
-    axMapTemperatur = fig.add_axes((0.41, 0.07, 0.59, 0.85))
-    draw_label_and_ticks()
-    img = mpimg.imread('StorBergen2.png')
-    axMapTemperatur.set_title("Årstemperatur Stor Bergen")
-    axGraph.set_title("Per måned")
-    axMapTemperatur.axis('off')
-
-    fig.subplots_adjust(left=0, right=1, top=1, bottom=0)  # Adjust the figure to fit the image
-    axMapTemperatur.margins(x=0.01, y=0.01)  # Adjust x and y margins
-
-    tempColors = [ '#fcf341', '#f9c32c', '#ef7e04', '#d14545', '#560505']
-
-    draw_the_map()
-
-    plt.connect('button_press_event', on_click)
-    plt.show()
+plt.connect('button_press_event', on_click_nedbor)
+plt.connect('button_press_event', on_click_temp)
 
 def nedbor_show(event):
     axMapNedbor.set_visible(True)
     axMapTemperatur.set_visible(False)
+    axGraphManed.set_visible(True)
+    axGraphManedTemp.set_visible(False)
     print("Nedbør skal vises!")
     fig.canvas.draw_idle()
 
@@ -361,6 +336,8 @@ def nedbor_show(event):
 def temperatur_show(event):
     axMapNedbor.set_visible(False)
     axMapTemperatur.set_visible(True)
+    axGraphManed.set_visible(False)
+    axGraphManedTemp.set_visible(True)
     print("Nedbør skal ikke vises. :(")
     fig.canvas.draw_idle()
 
