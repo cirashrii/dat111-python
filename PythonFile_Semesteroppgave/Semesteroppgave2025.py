@@ -33,6 +33,7 @@ plt.text(0,1,"Her kan du finne oversikten over \nnedbøren og temperaturen i Ber
          va="center")
 
 def plot1(event):
+    print("Plot 1 skal vises!")
     plt.close()
     display(SVG(filename='cloud.svg'))
 
@@ -154,7 +155,6 @@ def plot1(event):
         colorsPred = [color_from_nedbor(nedbor * 12) for nedbor in y_pred]
         axMap.scatter(x, y, c=color_from_nedbor(aarsnedbor), s=size_from_nedbor(aarsnedbor) * 2, marker=svg_path)
         axGraphManed.bar(months, y_pred, color=colorsPred)
-
         gjennomsnittManed = (aarsnedbor / 12)
         txt = "Gjennomsnitt:{:.2f}mm"
         axGraphManed.axhline(y=gjennomsnittManed, xmin=0, xmax=1, color='#ea9d02', linestyle='-', linewidth=2, alpha=0.8)
@@ -201,11 +201,13 @@ def plot1(event):
     def manadsvisning(event):
         axGraphManed.set_visible(True)
         axGraphKvartal.set_visible(False)
+        print("Månedsvisning skal vises!")
         fig.canvas.draw_idle()
 
     def kvartalvisning(event):
         axGraphManed.set_visible(False)
         axGraphKvartal.set_visible(True)
+        print("Kvartalsvisning skal vises!")
         fig.canvas.draw_idle()
 
     axButnNedborManad = plt.axes((0.05, 0.9, 0.167, 0.05))
